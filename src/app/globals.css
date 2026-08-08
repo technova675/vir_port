@@ -1,0 +1,2085 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Design tokens — extracted from the reference hero capture
+------------------------------------------------------------------ */
+@theme {
+  --color-ink: #08070a; /* deepest bg stop */
+  --color-ink-2: #0d0b10; /* mid bg stop */
+  --color-ink-3: #0f0e12; /* top bg stop */
+  --color-bone: #f6fffe; /* primary text */
+  --color-clay: #c86e53; /* accent — separators, section labels */
+  --color-teal: #509eaa; /* badge */
+  --color-mint: #afeedf; /* used at low alpha for hairlines */
+  --color-cream: #faf7ef; /* film-card text/background, from the Savoy capture */
+
+  --font-sans: var(--font-inter), sans-serif;
+  --font-ui: var(--font-chakra), monospace;
+  --font-display: var(--font-major-mono), monospace;
+
+  /* Film-card section — reference site's own type system */
+  --font-card-display: var(--font-neue-brucke), serif;
+  --font-card-sans: var(--font-nb-international), sans-serif;
+  --font-card-serif: var(--font-p22-parrish), serif;
+
+  /* Client-logos section */
+  --font-logos-sans: var(--font-aeonik), sans-serif;
+  --font-logos-script: var(--font-workhorse), cursive;
+  --color-brand-pink: #bb70ad; /* the "B" / "RANDS" highlight color */
+
+  /* Call-to-action section */
+  --color-cta-mint: #8ec6b5; /* "Get Started" pill background */
+
+  --ease-out-expo: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root {
+  --hairline: rgba(175, 238, 223, 0.2);
+  /* Hero type scale: 96px at a 1905px viewport === 5.04vw */
+  --hero-size: clamp(2.25rem, 5.04vw, 6rem);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  overflow-x: hidden;
+  color: var(--color-bone);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  background: radial-gradient(
+    at 50% 0%,
+    var(--color-ink-3) 0px,
+    var(--color-ink-2) 50%,
+    var(--color-ink) 100%
+  );
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------------
+   Fixed scrims
+------------------------------------------------------------------ */
+.ui-gradient-top,
+.ui-gradient-bottom {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  pointer-events: none;
+  z-index: 9999;
+}
+.ui-gradient-top {
+  top: 0;
+  background: linear-gradient(
+    rgba(8, 7, 10, 0.5) 0px,
+    rgba(8, 7, 10, 0.2) 50%,
+    transparent 100%
+  );
+}
+.ui-gradient-bottom {
+  bottom: 0;
+  background: linear-gradient(
+    to top,
+    rgba(8, 7, 10, 0.5) 0px,
+    rgba(8, 7, 10, 0.2) 50%,
+    transparent 100%
+  );
+}
+
+/* ------------------------------------------------------------------
+   Logo
+------------------------------------------------------------------ */
+#logo {
+  position: fixed;
+  top: 0;
+  left: 10px;
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  cursor: pointer;
+  z-index: 10000;
+  transform-origin: 0 0;
+  transition:
+    transform 0.3s ease,
+    width 0.3s ease,
+    opacity 0.3s ease;
+}
+#logo.shrunk {
+  transform: scale(0.55);
+}
+
+/* ------------------------------------------------------------------
+   Top nav
+------------------------------------------------------------------ */
+#nav-links {
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  height: 20px;
+  z-index: 10001;
+  transition: opacity 0.3s ease;
+}
+.nav-link {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-bone);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.nav-link:hover {
+  color: var(--color-clay);
+}
+.nav-separator {
+  color: var(--color-clay);
+  opacity: 0.5;
+  user-select: none;
+}
+
+/* ------------------------------------------------------------------
+   Contact dropdown
+------------------------------------------------------------------ */
+#contact-dropdown-wrapper {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  z-index: 10001;
+  transition: opacity 0.3s ease;
+}
+#contact-trigger {
+  transition: color 0.3s ease;
+}
+#contact-dropdown-wrapper:hover #contact-trigger {
+  color: var(--color-clay);
+}
+.social-dropdown {
+  position: absolute;
+  top: 13px;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 15px;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  z-index: 10002;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+#contact-dropdown-wrapper:hover .social-dropdown,
+#contact-dropdown-wrapper:focus-within .social-dropdown {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-align: right;
+  text-decoration: none;
+  color: var(--color-bone);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+.social-link:hover {
+  color: var(--color-clay);
+}
+.email-link {
+  font-weight: 400;
+}
+
+/* ------------------------------------------------------------------
+   Burger + mobile menu
+------------------------------------------------------------------ */
+#burger-menu {
+  display: none;
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  width: 30px;
+  height: 25px;
+  cursor: pointer;
+  z-index: 10002;
+  transition: opacity 0.3s ease;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+.burger-line {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--color-bone);
+  transition: all 0.3s ease;
+}
+.burger-line:nth-child(1) {
+  top: 0;
+}
+.burger-line:nth-child(2) {
+  top: 11px;
+}
+.burger-line:nth-child(3) {
+  top: 22px;
+}
+#burger-menu.open .burger-line:nth-child(1) {
+  transform: translateY(11px) rotate(45deg);
+}
+#burger-menu.open .burger-line:nth-child(2) {
+  opacity: 0;
+}
+#burger-menu.open .burger-line:nth-child(3) {
+  transform: translateY(-11px) rotate(-45deg);
+}
+
+#mobile-menu {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 400px;
+  max-width: 400px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 100px 40px 40px;
+  background: rgba(13, 11, 16, 0.98);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid var(--hairline);
+  z-index: 10001;
+  transition: right 0.4s ease;
+}
+#mobile-menu.open {
+  right: 0;
+}
+.mobile-menu-section {
+  margin-bottom: 40px;
+}
+.mobile-menu-title {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--color-clay);
+  opacity: 0.6;
+  margin-bottom: 20px;
+}
+.mobile-nav-link {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 18px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-bone);
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+.mobile-social-link {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-bone);
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+.mobile-nav-link:hover,
+.mobile-social-link:hover {
+  color: var(--color-clay);
+}
+.mobile-email {
+  margin-top: auto;
+  padding-top: 40px;
+  border-top: 1px solid var(--hairline);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--color-bone);
+  cursor: pointer;
+  background: none;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  text-align: left;
+}
+
+@media (max-width: 900px) {
+  #burger-menu {
+    display: block;
+  }
+  #nav-links,
+  #contact-dropdown-wrapper,
+  .scroll-nav {
+    display: none;
+  }
+  #logo {
+    width: 96px;
+    height: 96px;
+  }
+}
+@media (max-width: 420px) {
+  #mobile-menu {
+    width: 100%;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Scroll nav (right rail) + progress
+------------------------------------------------------------------ */
+.scroll-nav {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  opacity: 0;
+  z-index: 10000;
+  transition: opacity 0.5s ease;
+}
+.scroll-nav.visible {
+  opacity: 1;
+}
+.scroll-nav-item {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 4px 0;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+.scroll-nav-item:hover {
+  color: rgba(255, 255, 255, 0.9);
+  transform: scaleX(1.6);
+  transform-origin: right;
+}
+.scroll-nav-item.active {
+  color: rgba(255, 255, 255, 0.9);
+  transform: scaleX(2);
+  transform-origin: right;
+}
+.scroll-progress-indicator {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translate(41.25px, -50%);
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: all 0.5s ease;
+}
+.scroll-nav:hover .scroll-progress-indicator {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+/* ------------------------------------------------------------------
+   Scroll arrows
+------------------------------------------------------------------ */
+.scroll-arrows {
+  position: fixed;
+  bottom: 52px;
+  left: 50%;
+  margin-left: -10px;
+  width: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  z-index: 100;
+  transition: all 0.8s var(--ease-out-expo);
+}
+.scroll-arrow {
+  width: 20px;
+  height: 20px;
+  border-right: 2px solid var(--color-bone);
+  border-bottom: 2px solid var(--color-bone);
+  transform: rotate(45deg);
+  animation: arrow-blink 1.5s ease-in-out infinite;
+}
+.scroll-arrow:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.scroll-arrow:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes arrow-blink {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Hero canvas
+------------------------------------------------------------------ */
+#video-container {
+  position: fixed;
+  inset: 0;
+  height: 100svh;
+  z-index: 1;
+}
+#image-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ------------------------------------------------------------------
+   Hero text
+------------------------------------------------------------------ */
+.content-overlay {
+  position: fixed;
+  inset: 0;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+.combined-text-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.text-section {
+  max-width: 1152px;
+  font-size: var(--hero-size);
+  line-height: 0.95;
+  text-align: center;
+  pointer-events: none;
+}
+#text-1,
+#text-2 {
+  opacity: 0;
+  white-space: nowrap;
+}
+.text-gradient-bg {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 170%;
+  height: 200%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    rgba(8, 7, 10, 0.45) 0px,
+    rgba(8, 7, 10, 0.1) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+.we-tell {
+  margin-bottom: 8px;
+}
+.text-1-line,
+.text-2-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.3em;
+}
+.text-2-line {
+  margin-bottom: 0.05em;
+}
+.stories-word {
+  font-weight: 500;
+}
+.sized-people-word {
+  font-style: italic;
+}
+
+/* The two display words — a left-to-right fill wipe */
+.big-word,
+.regular-word {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  position: relative;
+  background-image: linear-gradient(
+    to right,
+    #ffffff 50%,
+    rgba(0, 0, 0, 0) 50%
+  );
+  background-size: 200% 100%;
+  transition:
+    background-position 0.6s ease-out,
+    color 0.4s ease,
+    transform 0.6s var(--ease-out-expo);
+}
+.big-word {
+  padding: 0.1em 0.3em;
+  background-position: 0 0; /* filled at rest */
+  color: var(--color-ink-2);
+  transform: rotate(-2deg) scale(1.1);
+  will-change: transform;
+  z-index: 10001;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.big-word.unfilled {
+  background-position: 100% 0;
+  color: var(--color-bone);
+  transform: rotate(0deg) scale(1);
+}
+.regular-word {
+  padding: 0.05em 0.2em;
+  background-position: 100% 0; /* unfilled at rest */
+  color: var(--color-bone);
+  pointer-events: auto;
+  cursor: pointer;
+}
+.regular-word.filled {
+  background-position: 0 0;
+  color: var(--color-ink-2);
+  transform: rotate(-2deg) scale(1.05);
+}
+
+#spacer {
+  position: relative;
+  z-index: 0;
+}
+
+/* ------------------------------------------------------------------
+   Reel section
+------------------------------------------------------------------ */
+/* Scoped to .reel-mounted so an unrelated placeholder reusing this same
+   id (before the Reel component is wired back in) doesn't inherit the
+   240vh scroll-scrub height meant only for the real component. */
+#reel-scroll-section.reel-mounted {
+  position: relative;
+  z-index: 16;
+  height: 240vh;
+}
+#reel-sticky-wrapper {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+#reel-headline {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 400;
+  text-align: center;
+}
+
+.reel-cards-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3vw;
+}
+
+.reel-video-container {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  cursor: pointer;
+}
+.reel-video-container.started {
+  cursor: default;
+}
+.reel-video-container.started .reel-label,
+.reel-video-container.started .reel-play-button {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+/* Tiny pill shown before the box has grown enough to show video */
+.reel-chip {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 0 16px;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-bone);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.reel-chip-play {
+  font-weight: 700;
+}
+.reel-chip-label {
+  opacity: 0.8;
+}
+.reel-chip-time,
+.reel-chip-speed {
+  opacity: 0.5;
+  font-size: 9px;
+}
+
+.reel-video-group {
+  position: absolute;
+  inset: 0;
+}
+.reel-preview,
+.reel-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.reel-video {
+  z-index: 0;
+}
+
+/* VHS retro overlay */
+.vhs-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 8px;
+}
+.vhs-blue-screen {
+  position: absolute;
+  inset: 0;
+  background: rgb(43, 82, 255);
+  opacity: 0.07;
+  z-index: 3;
+  animation: vhs-power-flicker 1.8s ease-out forwards;
+}
+.vhs-scanlines {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.06) 0px,
+    rgba(255, 255, 255, 0.06) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  animation: vhs-opacity 3s linear infinite;
+}
+.vhs-noise,
+.vhs-noise-moving {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.vhs-noise-moving {
+  animation: vhs-noise-shift 0.4s steps(4) infinite;
+}
+.vhs-text-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  font-family: var(--font-ui);
+  color: #fff;
+}
+.vhs-play-text,
+.vhs-time-text,
+.vhs-speed-text {
+  position: absolute;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-shadow:
+    rgba(255, 255, 255, 0.6) -1px 1px 8px,
+    rgba(251, 0, 231, 0.8) 1px 0px 1px,
+    rgba(0, 233, 235, 0.8) 0px 1px 2px,
+    rgba(0, 242, 14, 0.8) -1px 0px 2px;
+}
+.vhs-play-text {
+  top: 16px;
+  left: 16px;
+  font-size: 16px;
+}
+.vhs-time-text {
+  top: 16px;
+  right: 16px;
+  font-size: 16px;
+}
+.vhs-speed-text {
+  bottom: 16px;
+  left: 16px;
+  font-size: 12.8px;
+  letter-spacing: 1px;
+}
+
+.reel-darken-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  transition: background 0.3s ease;
+}
+
+.reel-label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.reel-play-button {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid rgba(175, 238, 223, 0.6);
+  background: rgba(175, 238, 223, 0.15);
+  backdrop-filter: blur(8px);
+  color: var(--color-mint);
+  transition:
+    transform 0.4s var(--ease-out-expo),
+    background 0.4s ease,
+    border-color 0.4s ease;
+}
+.reel-video-container:hover .reel-play-button {
+  transform: translate(-50%, -50%) scale(1.08);
+  background: rgba(175, 238, 223, 0.25);
+}
+.reel-play-button svg {
+  width: 32px;
+  height: 32px;
+  margin-left: 4px;
+}
+
+.reel-controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.8));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.reel-video-container.started:hover .reel-controls,
+.reel-video-container.started:focus-within .reel-controls {
+  opacity: 1;
+}
+.reel-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 0;
+  color: var(--color-bone);
+  cursor: pointer;
+  padding: 8px;
+  transition: transform 0.2s ease;
+}
+.reel-btn:hover {
+  transform: scale(1.1);
+  color: var(--color-mint);
+}
+.reel-btn svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+.reel-progress-container {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 20px;
+}
+.reel-progress-bar {
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+.reel-progress-fill {
+  height: 4px;
+  background: var(--color-mint);
+  transition: width 0.1s linear;
+}
+.reel-progress-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+  margin: 0;
+}
+.reel-time {
+  min-width: 90px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+}
+.reel-volume-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.reel-volume-slider {
+  width: 60px;
+  height: 4px;
+  accent-color: var(--color-mint);
+  cursor: pointer;
+}
+
+@keyframes vhs-opacity {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes vhs-noise-shift {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-2%, 2%);
+  }
+  50% {
+    transform: translate(2%, -1%);
+  }
+  75% {
+    transform: translate(-1%, -2%);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+@keyframes vhs-power-flicker {
+  0% {
+    opacity: 0.6;
+  }
+  15% {
+    opacity: 0.05;
+  }
+  30% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .reel-cards-row {
+    flex-direction: column;
+    gap: 4vh;
+  }
+  .reel-video-container {
+    width: 92vw !important;
+    height: 34vh !important;
+  }
+  #reel-headline {
+    font-size: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-arrow {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Film card (portfolio)
+------------------------------------------------------------------ */
+.portfolio-list {
+  position: relative;
+  z-index: 10;
+  cursor: grab;
+  /* Was `pan-x`, which tells the browser to allow horizontal panning ONLY
+     — it disabled native vertical scrolling across the whole portfolio, so
+     on a phone the page locked up here. There is no horizontal scroll in
+     this section; vertical is exactly what it needs. */
+  touch-action: pan-y;
+  background: #000;
+}
+.portfolio-list.grabbing {
+  cursor: grabbing;
+}
+.portfolio-list.grabbing .film-card-media-trigger {
+  cursor: grabbing;
+}
+
+.film-card-section {
+  position: relative;
+  /* Small, even gap between cards (reference keeps them nearly touching)
+     — horizontal margin only, no extra vertical padding beyond the gap
+     below. */
+  padding: 0 3.2vw;
+  margin-bottom: 0.4vw;
+}
+.film-card-section:last-child {
+  margin-bottom: 0;
+}
+/* The window matches the artwork's native 16:9 exactly, so nothing is
+   cropped. Height is capped via max-width (width * 9/16 <= 84vh) rather
+   than max-height — capping height directly would leave the width at
+   100% and reintroduce the crop. */
+.film-card {
+  position: relative;
+  width: 100%;
+  max-width: calc(84vh * 16 / 9);
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #000;
+}
+.film-card.is-playing .film-card-overlay {
+  opacity: 0;
+  pointer-events: none;
+}
+.film-card-media-trigger {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+/* Exactly fills its 16:9 window — no crop, the whole frame is visible. */
+.film-card-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.film-player {
+  position: absolute;
+  inset: 0;
+  background: #000;
+}
+/* The player container (not the <video>) is what goes fullscreen, so it
+   has to fill the screen itself — otherwise it keeps the card's absolute
+   box and letterboxes inside a mostly black screen. */
+.film-player:fullscreen {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+}
+.film-player:fullscreen .film-card-video {
+  object-fit: contain;
+}
+.reel-video-group:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+}
+.reel-video-group:fullscreen .reel-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.film-card-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+  cursor: pointer;
+}
+.film-player-back {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(250, 247, 239, 0.5);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  color: var(--color-cream);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+.film-player-back:hover {
+  background: rgba(0, 0, 0, 0.7);
+  transform: scale(1.06);
+}
+.film-player-back svg {
+  width: 20px;
+  height: 20px;
+}
+/* Custom control bar reuses .reel-controls styling but stays visible —
+   the reel player only shows controls on hover, this one is a full
+   standalone player so it should always be reachable. */
+.film-player-controls.reel-controls {
+  opacity: 1;
+  z-index: 20;
+}
+.film-card-play-prompt {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 1px solid rgba(250, 247, 239, 0.7);
+  color: var(--color-cream);
+  font-family: var(--font-card-display);
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+  pointer-events: none;
+}
+.film-card-media-trigger:hover .film-card-play-prompt,
+.film-card-media-trigger:focus-visible .film-card-play-prompt {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.05);
+}
+.film-card-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.1) 35%,
+    rgba(0, 0, 0, 0.15) 65%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+}
+.film-card.is-playing .film-card-scrim {
+  display: none;
+}
+
+.film-card-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2.5vw 3.2vw;
+  color: var(--color-cream);
+  font-family: var(--font-card-sans);
+  transition: opacity 0.3s ease;
+  /* Only the Explore link should intercept clicks — everywhere else
+     (including empty space) should pass through to the image/video
+     click-to-play trigger sitting underneath. */
+  pointer-events: none;
+}
+.film-explore {
+  pointer-events: auto;
+}
+.film-card-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+.film-card-row-bottom {
+  align-items: flex-end;
+}
+
+/* Top-left index stamp — numbered catalogue entry + its category, set on
+   one baseline with a hairline rule between them. */
+.film-index {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-card-display);
+  line-height: 1;
+  text-transform: uppercase;
+}
+.film-index-num {
+  font-size: clamp(13px, 1vw, 18px);
+  letter-spacing: 0.04em;
+  /* Tabular figures keep 01/02/… the same width, so the rule after the
+     number starts at an identical x on every card. */
+  font-variant-numeric: tabular-nums;
+}
+.film-index-rule {
+  width: clamp(20px, 2.4vw, 44px);
+  height: 1px;
+  background: currentColor;
+  opacity: 0.45;
+}
+.film-index-tag {
+  font-family: var(--font-card-serif);
+  font-size: clamp(9px, 0.68vw, 13px);
+  letter-spacing: 0.3em;
+  opacity: 0.85;
+}
+
+/* Top-right results — the numbers are the proof, so they get display type
+   and the labels stay quiet beneath them. */
+.film-stats {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(20px, 2.6vw, 48px);
+  text-align: right;
+}
+.film-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.film-stat-value {
+  font-family: var(--font-card-display);
+  font-size: clamp(20px, 2vw, 38px);
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+.film-stat-label {
+  margin-top: 8px;
+  font-family: var(--font-card-serif);
+  font-size: clamp(9px, 0.66vw, 12px);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+/* Bottom-left info block */
+.film-info {
+  max-width: 400px;
+}
+/* One-line brief. Clamped to two lines so a long first sentence can never
+   push the meta table off the bottom of the card. */
+.film-summary {
+  margin: 0 0 16px;
+  max-width: 38ch;
+  font-family: var(--font-card-sans);
+  font-size: clamp(12px, 0.85vw, 15px);
+  line-height: 1.5;
+  opacity: 0.78;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.film-eyebrow {
+  font-family: var(--font-card-serif);
+  font-size: clamp(10px, 0.75vw, 14px);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  line-height: 1.33;
+  margin-bottom: 14px;
+  opacity: 0.85;
+}
+.film-meta {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid rgba(250, 247, 239, 0.3);
+}
+.film-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(250, 247, 239, 0.3);
+  font-family: var(--font-card-display);
+  font-size: clamp(12px, 0.95vw, 18px);
+  letter-spacing: -0.01em;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+.film-meta-label {
+  opacity: 0.7;
+}
+
+/* Explore button */
+.film-explore {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 142px;
+  height: 44px;
+  color: var(--color-cream);
+  text-decoration: none;
+  font-family: var(--font-card-display);
+  font-size: clamp(11px, 0.82vw, 15px);
+  letter-spacing: 0.15em;
+  line-height: 0.9;
+  text-transform: uppercase;
+  transition: opacity 0.3s ease;
+}
+.film-explore:hover {
+  opacity: 0.75;
+}
+.film-explore-outline {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+/* The outline's dashed divider sits at x=98 of its 142 viewBox, so the
+   label and arrow each get their own compartment and center inside it
+   rather than centering as one group across the divider. */
+.film-explore-text {
+  flex: 0 0 69.01%;
+  text-align: center;
+  /* letter-spacing adds a trailing gap after the last glyph — pull it
+     back so the word reads optically centered. */
+  text-indent: 0.15em;
+}
+.film-explore-arrow {
+  flex: 0 0 30.99%;
+  width: auto;
+  height: 10px;
+  fill: currentColor;
+}
+
+/* ------------------------------------------------------------------
+   Portfolio "premium" treatment — scoped to .portfolio-premium so the
+   grain/type/colour discipline never leaks into other sections.
+------------------------------------------------------------------ */
+.portfolio-premium {
+  --pp-bg: #000;
+  --pp-fg: var(--color-cream);
+  --pp-accent: rgba(250, 247, 239, 0.6);
+
+  position: relative;
+  background: var(--pp-bg);
+  color: var(--pp-fg);
+  /* Reuses the project's existing font tokens (see :root) rather than
+     re-declaring the next/font variable names. */
+  font-family: var(--font-card-sans), Arial, sans-serif;
+}
+.portfolio-premium h1,
+.portfolio-premium h2,
+.portfolio-premium .film-title {
+  font-family: var(--font-card-display);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Static film grain. Same feTurbulence data-URI the VHS layer uses, at a
+   larger tile and much lower opacity — no repaint cost, no shader work.
+   z-index clears .portfolio-list (z-index: 10). */
+.portfolio-premium::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  pointer-events: none;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-premium::after {
+    opacity: 0.03;
+  }
+}
+
+/* Card title — split-rollover. Every letter is its own clipped window with
+   the letter and a clone stacked inside; see FilmCard.tsx for the driver.
+   Geometry follows the reference capture in parti.txt: the mask is exactly
+   one line-box tall and the clone sits at top: 100%. */
+.portfolio-premium .film-title-wrap {
+  position: relative;
+  margin-bottom: 10px;
+}
+.portfolio-premium .film-title {
+  font-size: clamp(28px, 3vw, 56px);
+  /* --roll-lh is the mask height, the leading, AND (via -100%) the roll
+     distance, so all three can never drift apart and leave the clone
+     mis-parked or the loop seamed.
+
+     It must stay >= the font's content area (~1.15em), or the glyphs spill
+     out of their own line box and the clone's cap-tops show through below
+     the mask as a permanent second row of text. */
+  --roll-lh: 1.15;
+  line-height: var(--roll-lh);
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.portfolio-premium .film-title-letters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  /* The leading above has to clear the glyph ink, which leaves the display
+     type sitting in a taller box than it optically needs. Pull that slack
+     back off both ends so the title keeps the tight spacing it had at 0.9
+     without re-clipping anything. */
+  margin-top: -0.11em;
+  margin-bottom: -0.11em;
+}
+/* The clipping window. Overflow hidden is the hard edge that slices the
+   glyphs mid-roll — the whole effect depends on it. */
+.portfolio-premium .film-title-roll {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  height: calc(1em * var(--roll-lh));
+  /* Letters would otherwise be clipped left/right by their own mask once
+     the glyph is wider than its advance width (uppercase Y, X). */
+  padding: 0 0.02em;
+  margin: 0 -0.02em;
+}
+.portfolio-premium .film-title-char {
+  display: block;
+  line-height: var(--roll-lh);
+  /* Driven by GSAP; declared so the first paint matches the settled state
+     instead of jumping when the ScrollTrigger first fires. */
+  transform: translateY(0);
+  will-change: transform;
+}
+/* The clone, parked exactly one line-box below its letter. It shares the
+   letter's transform, so it trails it by precisely one box at all times. */
+.portfolio-premium .film-title-ghost {
+  position: absolute;
+  left: 0.02em;
+  top: 100%;
+  pointer-events: none;
+}
+.portfolio-premium .film-title-space {
+  display: inline-block;
+}
+
+/* No scroll driver runs here, so the letters must sit still and legible. */
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-premium .film-title-char {
+    transform: none !important;
+  }
+}
+
+/* Explore pill — the existing .film-explore keeps its SVG outline, so the
+   polish here is the magnetic hover only. */
+.portfolio-premium .film-explore {
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+}
+.portfolio-premium .film-explore:hover {
+  transform: scale(1.04);
+  opacity: 1;
+}
+
+@media (max-width: 900px) {
+  /* Mobile matches desktop: the card IS the thumbnail, at the thumbnail's
+     own 16:9, with the copy overlaid on the artwork. A portrait card can
+     only get there by cropping the frame (object-fit: cover) or by
+     letterboxing it into black bands (contain) — the first loses the sides
+     of every shot, the second pushes the copy off the picture. Keeping the
+     card at 16:9 avoids both: the whole frame shows, edge to edge, and the
+     rounded corners belong to the image itself. */
+  .film-card-section {
+    padding: 0 3vw;
+    margin-bottom: 14px;
+  }
+  .film-card {
+    height: auto;
+    aspect-ratio: 16 / 9;
+    max-width: none;
+    border-radius: 14px;
+  }
+
+  /* Same ratio as the card, so `cover` fills it without discarding anything
+     — this is the desktop behaviour, not a crop. */
+  .film-card-image {
+    object-fit: cover;
+  }
+
+  .film-card-scrim {
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.78) 0%,
+      rgba(0, 0, 0, 0.3) 42%,
+      rgba(0, 0, 0, 0.32) 58%,
+      rgba(0, 0, 0, 0.68) 100%
+    );
+  }
+
+  /* A 16:9 card on a phone is short — roughly 190px tall — so every element
+     below is sized to fit inside that band rather than scaled off the
+     desktop values. */
+  .film-card-overlay {
+    padding: 12px 14px 14px;
+  }
+  /* Same four-corner anchoring as desktop — index top-left, stats top-right,
+     title bottom-left, Visit bottom-right — just at phone sizes. */
+  .film-card-row {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+  }
+
+  /* Number and category read as one stamp; the connecting rule is the first
+     thing to go once the corner has to hold both. */
+  .film-index-rule {
+    display: none;
+  }
+  .film-index {
+    gap: 7px;
+  }
+  .film-index-num {
+    font-size: 11px;
+    opacity: 0.7;
+  }
+  .film-index-tag {
+    font-size: 8px;
+    letter-spacing: 0.22em;
+  }
+
+  /* Stats stay in the top-right corner, right-aligned like desktop. */
+  .film-stats {
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 16px;
+    text-align: right;
+  }
+  .film-stat {
+    align-items: flex-end;
+  }
+  .film-stat-value {
+    font-size: clamp(15px, 4.4vw, 20px);
+  }
+  .film-stat-label {
+    margin-top: 3px;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+  }
+
+  /* Neither the brief nor the meta table fits inside a 16:9 band on a phone
+     without shrinking the title to nothing. The category chip and the view
+     count already carry what they were saying. */
+  .film-summary,
+  .film-meta {
+    display: none;
+  }
+
+  .film-card-row-bottom {
+    align-items: flex-end;
+    gap: 10px;
+  }
+  .film-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: none;
+    /* Shrink-to-fit so the Visit pill keeps its own corner instead of being
+       pushed off the right edge by a full-width title block. */
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+  /* Reference runs the category label above the title; desktop DOM order
+     is title-first, so flip it visually rather than fork the markup.
+
+     As a bare tracked line it disappeared into the artwork at this size, so
+     on mobile it becomes an outlined chip — the category is the one word
+     that tells someone what they're looking at. */
+  .film-eyebrow {
+    order: -1;
+    margin-bottom: 8px;
+    padding: 4px 10px 3px;
+    border: 1px solid rgba(250, 247, 239, 0.45);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(4px);
+    font-size: 8px;
+    letter-spacing: 0.22em;
+    line-height: 1;
+    opacity: 1;
+  }
+  .film-title-wrap {
+    width: 100%;
+    margin-bottom: 0;
+  }
+  /* Sized against the 16:9 band's height rather than the viewport width —
+     10vw overflowed the card once the artwork stopped being portrait. */
+  .portfolio-premium .film-title {
+    font-size: clamp(22px, 6.5vw, 34px);
+  }
+  .portfolio-premium .film-title-letters {
+    justify-content: flex-start;
+  }
+
+  /* The Watch pill is a fixed-size SVG outline, so it scales by box rather
+     than by font-size. It must not shrink when the title runs long. */
+  .film-explore {
+    width: 96px;
+    height: 30px;
+    font-size: 9px;
+    flex: 0 0 auto;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Client logos
+------------------------------------------------------------------ */
+.client-logos-section {
+  position: relative;
+  z-index: 10;
+  height: 450vh;
+  background: #000;
+}
+.client-logos-sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6vw;
+  overflow: hidden;
+}
+
+.client-logos-heading {
+  font-family: var(--font-logos-sans);
+  color: #fff;
+  max-width: 40vw;
+}
+.client-logos-eyebrow {
+  margin: 0 0 12px;
+  font-size: clamp(12px, 1vw, 16px);
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.client-logos-title {
+  margin: 0;
+  font-size: clamp(2.5rem, 5.6vw, 5.5rem);
+  font-weight: 700;
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+.client-logos-line {
+  display: block;
+}
+.client-logos-script {
+  font-family: var(--font-logos-script);
+  font-style: normal;
+  font-weight: 400;
+  color: var(--color-brand-pink);
+  letter-spacing: 2px;
+  margin-right: 4px;
+}
+.client-logos-line strong {
+  font-weight: 700;
+  color: var(--color-brand-pink);
+}
+
+/* Clipped 3-slot window — the logo list scrolls continuously through it
+   as the section scrubs; whatever lands in the center slot is "active". */
+.client-logos-window {
+  position: relative;
+  width: 20vw;
+  min-width: 260px;
+  /* Reference keeps this column pulled in from the edge (~60-79vw of a
+     1920px viewport), not flush against it — pull it in from the
+     space-between's default right-edge position to match. */
+  margin-right: 15vw;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 20%,
+    #000 80%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 20%,
+    #000 80%,
+    transparent 100%
+  );
+}
+.client-logos-list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.client-logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  width: 100%;
+}
+/* Some assets are icon-only, so the brand name is supplied as `text` and
+   set beside the mark; the mark then shrinks to icon size instead of
+   spanning the row. */
+.client-logo.with-text .client-logo-mark {
+  flex: 0 0 auto;
+  width: auto;
+  aspect-ratio: 1 / 1;
+  mask-position: center;
+  -webkit-mask-position: center;
+}
+.client-logo-text {
+  flex: 0 0 auto;
+  font-size: clamp(24px, 2.2vw, 38px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.35);
+  transition: color 0.3s ease-out;
+}
+.client-logo.active .client-logo-text {
+  color: var(--color-brand-pink);
+}
+/* Rendered as a mask instead of <img> so it can be recolored solid
+   flat (gray dim / pink active) with no bleed, matching the reference —
+   its "highlight" isn't a box behind the logo, the logo itself recolors. */
+.client-logo-mark {
+  width: 100%;
+  height: 60%;
+  background-color: rgba(255, 255, 255, 0.35);
+  mask-repeat: no-repeat;
+  mask-position: right center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: right center;
+  -webkit-mask-size: contain;
+  transition: background-color 0.3s ease-out;
+}
+.client-logo.active .client-logo-mark {
+  background-color: var(--color-brand-pink);
+}
+
+.client-logos-marquee {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .client-logos-section {
+    height: auto;
+  }
+  .client-logos-sticky {
+    position: relative;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 40px;
+    height: auto;
+    padding: 20vw 6vw;
+  }
+  .client-logos-heading {
+    max-width: 100%;
+  }
+  .client-logos-window {
+    display: none;
+  }
+  .client-logos-marquee {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+  }
+  .client-logos-marquee-track {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    width: max-content;
+    animation: client-logos-scroll 24s linear infinite;
+  }
+  /* Masked, not <img> — same technique as the desktop .client-logo-mark,
+     so the logo recolours (dim grey -> brand pink) instead of revealing
+     its own artwork, which is black and vanished against the section. */
+  .client-logos-marquee-img {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    height: 32px;
+    transform: scale(0.92);
+    transition: transform 0.35s ease-out;
+  }
+  .client-logos-marquee-icon {
+    position: relative;
+    display: block;
+    height: 100%;
+  }
+  .client-logos-marquee-text {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.35);
+    transition: color 0.35s ease-out;
+  }
+  .client-logos-marquee-img.is-centered .client-logos-marquee-text {
+    color: var(--color-brand-pink);
+  }
+  .client-logos-marquee-sizer {
+    display: block;
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    visibility: hidden;
+  }
+  .client-logos-marquee-mark {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.35);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    transition: background-color 0.35s ease-out;
+  }
+  /* Applied per-frame by ClientLogos to whichever logo is crossing the
+     centre of the marquee — the mobile counterpart to .client-logo.active
+     on the desktop stepper, using the same brand pink. */
+  .client-logos-marquee-img.is-centered {
+    transform: scale(1);
+  }
+  .client-logos-marquee-img.is-centered .client-logos-marquee-mark {
+    background-color: var(--color-brand-pink);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .client-logos-marquee-track {
+      animation: none;
+    }
+    .client-logos-marquee-img {
+      transform: none;
+    }
+  }
+}
+
+@keyframes client-logos-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ------------------------------------------------------------------
+   Call to action
+------------------------------------------------------------------ */
+.cta-section {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+  background: #000;
+  padding: 8vw 6vw;
+}
+.cta-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.cta-heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0 0 2vw;
+  color: #fff;
+  font-family: var(--font-logos-sans);
+  font-size: clamp(2.5rem, 9.5vw, 9.5rem);
+  font-weight: 700;
+  line-height: 0.8;
+  text-transform: uppercase;
+}
+.cta-word {
+  white-space: nowrap;
+}
+.cta-script {
+  font-family: var(--font-logos-script);
+  font-style: normal;
+  font-weight: 400;
+  margin-right: 0.05em;
+}
+.cta-image-wrap {
+  display: inline-block;
+  width: 0.85em;
+  height: 0.76em;
+  margin: 0 -0.05em;
+  border-radius: 0.09em;
+  overflow: hidden;
+  vertical-align: middle;
+}
+.cta-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cta-button {
+  position: absolute;
+  top: -6vw;
+  right: 4vw;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2em 1.6em;
+  border-radius: 999px;
+  background: var(--color-cta-mint);
+  color: #000;
+  font-family: var(--font-logos-sans);
+  font-size: clamp(11px, 1.1vw, 15px);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform-origin: center;
+  transition: transform 0.3s var(--ease-out-expo);
+  pointer-events: auto;
+}
+.cta-button:hover {
+  transform: scale(1.08) !important;
+}
+
+.cta-subtext {
+  margin: 0;
+  color: #fff;
+  font-family: var(--font-logos-sans);
+  font-size: clamp(1rem, 1.4vw, 1.5rem);
+  font-weight: 400;
+}
+
+/* Inline Calendly booking widget under the CTA copy. Calendly renders an
+   iframe it sizes itself, so the host only sets the frame around it. */
+.cta-booking {
+  width: min(1100px, 92vw);
+  margin: 80px auto 0;
+  text-align: center;
+}
+.cta-booking-heading {
+  margin: 0 0 12px;
+  font-size: clamp(2rem, 3.4vw, 3.25rem);
+  font-weight: 400;
+}
+.cta-booking-subtext {
+  margin: 0 0 40px;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-logos-sans);
+  font-size: clamp(1rem, 1.2vw, 1.25rem);
+}
+.cta-calendly {
+  min-width: 320px;
+  height: 700px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* Social row under the booking widget */
+.cta-socials {
+  margin-top: 48px;
+  text-align: center;
+}
+.cta-socials-label {
+  margin: 0 0 18px;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--font-logos-sans);
+  font-size: 0.8125rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+/* NOTE: deliberately NOT named .social-link — that class already belongs
+   to the nav Contact dropdown (see ~line 207), which lays its links out in
+   a column. Reusing the name turned those text links into stacked circles. */
+.social-icon-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.social-icon-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.75);
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+.social-icon-link svg {
+  width: 19px;
+  height: 19px;
+}
+/* The X glyph has no enclosing shape, so at 19px it optically outweighs
+   the filled marks beside it. */
+.social-icon-link[aria-label="X"] svg {
+  width: 16px;
+  height: 16px;
+}
+.social-icon-link:hover {
+  transform: translateY(-3px);
+  background: #fff;
+  border-color: #fff;
+  color: #000;
+}
+.social-icon-link:focus-visible {
+  outline: 2px solid var(--color-brand-pink);
+  outline-offset: 3px;
+}
+.social-icon-fallback {
+  font-family: var(--font-logos-sans);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+}
+@media (prefers-reduced-motion: reduce) {
+  .social-icon-link {
+    transition: none;
+  }
+  .social-icon-link:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .cta-booking {
+    margin-top: 56px;
+  }
+  .cta-calendly {
+    height: 1000px;
+  }
+  .cta-heading {
+    font-size: 3rem;
+    line-height: 1.1;
+  }
+  .cta-image-wrap {
+    width: 1.6em;
+    height: 1.2em;
+    margin: 0.2em 0;
+    display: block;
+  }
+  .cta-button {
+    position: static;
+    margin: 24px 0;
+    transform: none !important;
+  }
+}

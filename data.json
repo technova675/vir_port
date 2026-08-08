@@ -1,0 +1,90 @@
+[
+    {
+        "id": 1,
+        "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/AGNOST_LAUNCH.png",
+        "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/AGNOST_LAUNCH.mp4",
+        "client": "Agnost",
+        "description": "Agnost is a cutting-edge AI-powered platform that revolutionizes the way businesses operate. With its advanced machine learning algorithms and intuitive user interface, Agnost enables organizations to harness the power of artificial intelligence to streamline processes, enhance decision-making, and drive innovation. From predictive analytics to natural language processing, Agnost offers a comprehensive suite of tools that empower businesses to stay ahead in today's competitive landscape.",
+        "category": "Launch Film",
+        "url": "https://x.com/ShubhamInTech/status/2080683611070800180",
+        "viewsCount": 93361,
+        "likesCount": 619 
+    },
+    {
+        "id": 2,
+        "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Context.jpg",
+        "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Context.mp4",
+        "client": "Context",
+        "description": "Context is a revolutionary platform that transforms the way we interact with digital content. With its immersive virtual reality experiences and intuitive user interface, Context provides an unparalleled level of engagement and personalization. From interactive storytelling to collaborative workspaces, Context offers a seamless blend of creativity and functionality.",
+        "category": "Launch Film",
+        "url": "https://x.com/mynameisyahia/status/2085065519515009397",
+        "viewsCount": 191634,
+        "likesCount": 805
+    },
+     {
+        "id": 3,
+        "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Tsenta%20thumbnail.png",
+        "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Tsenta.mp4",
+        "client": "Tsenta",
+        "description": "Tsenta is a cutting-edge platform that redefines the boundaries of digital creativity. With its innovative tools and intuitive design, Tsenta empowers users to bring their imagination to life in ways previously thought impossible.",
+        "category": "Launch Film",
+        "url": "https://x.com/pulkit_gupta2/status/2083232873071730766",
+        "viewsCount": 57081,
+        "likesCount": 370
+    },
+    {
+        "id": 4,
+        "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Agnost_AI_Launch.jpg",
+        "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Agnost_AI_Launch.mp4",
+         "client": "Agnost",
+        "description": "Agnost is a cutting-edge AI-powered platform that revolutionizes the way businesses operate. With its advanced machine learning algorithms and intuitive user interface, Agnost enables organizations to harness the power of artificial intelligence to streamline processes, enhance decision-making, and drive innovation. From predictive analytics to natural language processing, Agnost offers a comprehensive suite of tools that empower businesses to stay ahead in today's competitive landscape.",
+        "category": "Launch Film",
+        "url": "https://x.com/ShubhamInTech/status/2050074244017787312",
+        "viewsCount": 23865,
+        "likesCount": 285
+    },
+    {
+        "id": 5,
+        "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Founder_Journey.jpg",
+        "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Founder_journey.mp4",
+        "client": "Agnost",
+        "description": "The journey of Agnost's founder as they navigate the challenges and opportunities of building a revolutionary AI-powered platform.",
+        "category": "Founder Story",
+        "url": "https://x.com/ShubhamInTech/status/2046998021708349562",
+        "viewsCount": 32228,
+        "likesCount": 493
+    },
+    {
+        "id": 6,
+        "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/duo.jpg",
+        "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Duo%20Final%20Video.mp4",
+        "client": "Duo",
+        "description": "Duo is a innovative platform that brings people together in new and exciting ways. With its intuitive interface and powerful features, Duo enables seamless communication and collaboration for individuals and teams.",
+        "category": "Product Demo",
+        "url": "https://x.com/ShubhamInTech/status/2080683611070800180",
+        "viewsCount": 93361,
+        "likesCount": 619
+    },
+    {
+        "id": 7,
+        "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/creatin.jpg",
+        "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Creatin%20Sfx.mp4",
+        "client": "Creatin",
+        "description": "Creatin is a dynamic platform that empowers creators to unleash their full potential and bring their ideas to life. With its intuitive interface and powerful tools, Creatin provides a seamless experience for artists, designers, and innovators to collaborate, share, and showcase their work.",
+        "category": "Product Demo",
+        "url": "https://x.com/ShubhamInTech/status/2080683611070800180",
+        "viewsCount": 93361,
+        "likesCount": 619
+    },
+    {
+        "id": 8,
+        "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Agglayer.jpg",
+        "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Agglayer.mp4",
+        "client": "Agglayer",
+        "description": "Agglayer is a cutting-edge platform that revolutionizes the way businesses manage and analyze data. With its advanced analytics tools and intuitive interface, Agglayer empowers organizations to make data-driven decisions and gain valuable insights.",
+        "category": "Live Action",
+        "url": "https://x.com/ShubhamInTech/status/2080683611070800180",
+        "viewsCount": 93361,
+        "likesCount": 619
+    }
+]
