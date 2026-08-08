@@ -1,0 +1,20 @@
+# Committed so the repo — not the dashboard's build settings — is the source
+# of truth. A mismatched publish directory here is what produced a green
+# build with a 404 on every path, including static files in public/.
+
+[build]
+  command = "npm run build"
+  # The Next.js runtime reads the build output from .next and splits it into
+  # static assets plus the server handler. Do not point this at "out" unless
+  # the app is switched to output: "export".
+  publish = ".next"
+
+[build.environment]
+  # Next 16 / React 19 require Node 20.9+. Pinning keeps a Netlify default
+  # bump from silently changing the build.
+  NODE_VERSION = "22"
+
+# Netlify normally auto-installs this for Next sites; declaring it explicitly
+# means the deploy can't fall back to treating the repo as a static folder.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
