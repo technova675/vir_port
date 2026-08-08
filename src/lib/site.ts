@@ -93,9 +93,9 @@ export const CTA = {
   imageAlt: "Dj Girl",
   buttonLabel: "Get Started",
   buttonHref: "#contact",
-  subtext: "Let's find your perfect match.",
+  subtext: "",
   bookingHeading: "Book a call",
-  bookingSubtext: "Pick a time and we'll reach out.",
+  bookingSubtext: "Pick a time",
   /**
    * Replace `your-name/15min` with your own Calendly event link.
    * The query params style the widget to match the dark section —
