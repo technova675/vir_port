@@ -186,7 +186,7 @@ export default function HeroText({ scrollLength }: { scrollLength: string }) {
         <span className="big-word">
           <Chars text="launch" />
         </span>
-        <Chars text="& product videos" />
+        <Chars text="& founder videos" />
       </div>
 
       <div id="text-2" className="hero-line">

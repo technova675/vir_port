@@ -418,7 +418,7 @@ export default function FilmCard({ data }: { data: FilmCardData }) {
                 <span className="film-index-tag">{data.eyebrow}</span>
               </div>
 
-              <div className="film-stats">
+              {/* <div className="film-stats">
                 {data.stats.map((s, si) => (
                   <div
                     className="film-stat"
@@ -430,7 +430,7 @@ export default function FilmCard({ data }: { data: FilmCardData }) {
                     <div className="film-stat-label">{s.label}</div>
                   </div>
                 ))}
-              </div>
+              </div> */}
             </div>
 
             <div className="film-card-row film-card-row-bottom">
@@ -475,26 +475,6 @@ export default function FilmCard({ data }: { data: FilmCardData }) {
                     </span>
                   </h2>
                 </div>
-                {/* <div className="film-eyebrow">{data.eyebrow}</div>
-
-                <p className="film-summary">{data.summary}</p>
-
-                <div className="film-meta">
-                  <div className="film-meta-row">
-                    <span className="film-meta-label">Client</span>
-                    <span className="film-meta-value">{data.meta.client}</span>
-                  </div>
-                  <div className="film-meta-row">
-                    <span className="film-meta-label">Format</span>
-                    <span className="film-meta-value">
-                      {data.meta.category}
-                    </span>
-                  </div>
-                  <div className="film-meta-row">
-                    <span className="film-meta-label">Reach</span>
-                    <span className="film-meta-value">{data.meta.reach}</span>
-                  </div>
-                </div> */}
               </div>
 
               <a
@@ -517,7 +497,17 @@ export default function FilmCard({ data }: { data: FilmCardData }) {
                     d="M98 4.5v34"
                   />
                 </svg>
-                <span className="film-explore-text">Visit</span>
+                <span className="film-explore-text">
+                  Visit
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="film-explore-x"
+                    role="img"
+                    aria-label="X"
+                  >
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644Z" />
+                  </svg>
+                </span>
                 <svg viewBox="0 0 11 10" className="film-explore-arrow">
                   <path d="M4.481.005a6.65 6.65 0 0 1 6.46 4.659c.078.229.08.479-.003.706C10.302 7.105 8.318 10 4.48 10V8.39c.941.127 2.922-.257 4.442-2.603H0V4.208h8.938c-.756-1.229-2.216-2.78-4.457-2.78V.006Z" />
                 </svg>

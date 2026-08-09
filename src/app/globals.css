@@ -1458,10 +1458,30 @@ html.lenis body {
    rather than centering as one group across the divider. */
 .film-explore-text {
   flex: 0 0 69.01%;
-  text-align: center;
-  /* letter-spacing adds a trailing gap after the last glyph — pull it
-     back so the word reads optically centered. */
-  text-indent: 0.15em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* The label and mark share a fixed ~98px compartment; nowrap keeps them
+     on one line instead of breaking when the compartment gets tight. */
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  /* letter-spacing adds a trailing gap after the last glyph, so the word
+     sits closer to the mark than the gap value suggests. */
+  gap: 0.25em;
+}
+/* The X mark reads heavier than the surrounding caps at matching height,
+   so it's set slightly under the cap height rather than to 1em.
+
+   flex centering aligns the mark to the middle of the text's em box, but
+   the label is all-caps: its glyphs occupy only the cap height, whose
+   optical centre sits above the em centre. Left alone the mark reads as
+   dropped below the baseline, so it's nudged back up by the difference. */
+.film-explore-x {
+  width: auto;
+  height: 0.78em;
+  fill: currentColor;
+  flex: none;
+  transform: translateY(-0.09em);
 }
 .film-explore-arrow {
   flex: 0 0 30.99%;
@@ -1671,7 +1691,9 @@ html.lenis body {
   .film-stats {
     flex-direction: row;
     justify-content: flex-end;
-    gap: 16px;
+    /* Three stats plus the index stamp have to share one phone-width row,
+       so the gap is tighter here than the two-stat desktop rhythm. */
+    gap: 11px;
     text-align: right;
   }
   .film-stat {

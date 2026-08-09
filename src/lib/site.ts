@@ -76,6 +76,7 @@ export const FILM_CARDS = PORTFOLIO_ITEMS.map((item, i) => ({
   stats: [
     { label: "Views", value: formatCount(item.viewsCount) },
     { label: "Likes", value: formatCount(item.likesCount) },
+    { label: "Comments", value: formatCount(item.commentsCount) },
   ],
   meta: {
     client: item.client,
@@ -88,10 +89,11 @@ export const FILM_CARDS = PORTFOLIO_ITEMS.map((item, i) => ({
 
 /** Client logo SVGs, served locally from public/logos. */
 export const CLIENT_LOGOS = [
-  { key: "agnost-ai", src: "/logos/agnost-ai-horizontal.svg", text: "YC (S26)", alt: "Agnost AI" },
   { key: "context-dev", src: "/logos/context_dev.svg", text: "Context.dev YC (S26)", alt: "Context.dev" },
-  { key: "duo", src: "/logos/duo.svg", text: "YC (S26)", alt: "Duo" },
+  { key: "agnost-ai", src: "/logos/agnost-ai-horizontal.svg", text: "YC (S26)", alt: "Agnost AI" },
   { key: "tsenta", src: "/logos/tsenta-black.svg", text: "Tsenta YC (S26)", alt: "Tsenta" },
+  { key: "click", src: "/logos/click.svg", text: "Click YC (S26)", alt: "Click" },
+  { key: "duo", src: "/logos/duo.svg", text: "", alt: "Duo" },
   { key: "agglayer", src: "/logos/agglayer.svg", text: "", alt: "Agglayer" },
   { key: "aptos", src: "/logos/aptos.svg", text: "", alt: "Aptos" },
   { key: "biconomy", src: "/logos/biconomy.svg", text: "", alt: "Biconomy" },

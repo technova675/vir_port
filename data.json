@@ -7,8 +7,9 @@
         "description": "Context is a revolutionary platform that transforms the way we interact with digital content. With its immersive virtual reality experiences and intuitive user interface, Context provides an unparalleled level of engagement and personalization. From interactive storytelling to collaborative workspaces, Context offers a seamless blend of creativity and functionality.",
         "category": "Launch Film",
         "url": "https://x.com/mynameisyahia/status/2085065519515009397",
-        "viewsCount": 191634,
-        "likesCount": 805
+        "viewsCount": 203486,
+        "likesCount": 812,
+        "commentsCount": 226
     },
     {
         "id": 2,
@@ -18,8 +19,9 @@
         "description": "Agnost is a cutting-edge AI-powered platform that revolutionizes the way businesses operate. With its advanced machine learning algorithms and intuitive user interface, Agnost enables organizations to harness the power of artificial intelligence to streamline processes, enhance decision-making, and drive innovation. From predictive analytics to natural language processing, Agnost offers a comprehensive suite of tools that empower businesses to stay ahead in today's competitive landscape.",
         "category": "Launch Film",
         "url": "https://x.com/ShubhamInTech/status/2080683611070800180",
-        "viewsCount": 93361,
-        "likesCount": 619 
+        "viewsCount": 93792,
+        "likesCount": 619,
+        "commentsCount": 213
     },
      {
         "id": 3,
@@ -29,29 +31,44 @@
         "description": "Tsenta is a cutting-edge platform that redefines the boundaries of digital creativity. With its innovative tools and intuitive design, Tsenta empowers users to bring their imagination to life in ways previously thought impossible.",
         "category": "Launch Film",
         "url": "https://x.com/pulkit_gupta2/status/2083232873071730766",
-        "viewsCount": 57081,
-        "likesCount": 370
+        "viewsCount": 57491,
+        "likesCount": 371,
+        "commentsCount": 81
     },
     {
         "id": 4,
+        "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/AGN.jpg",
+        "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/AGN.mp4",
+        "client": "Agnost",
+        "description": "Agnost is a cutting-edge AI-powered platform that revolutionizes the way businesses operate. With its advanced machine learning algorithms and intuitive user interface, Agnost enables organizations to harness the power of artificial intelligence to streamline processes, enhance decision-making, and drive innovation. From predictive analytics to natural language processing, Agnost offers a comprehensive suite of tools that empower businesses to stay ahead in today's competitive landscape.",
+        "category": "Rage Prompt",
+        "url": "https://x.com/ShubhamInTech/status/2078148731866923224",
+        "viewsCount": 27685,
+        "likesCount": 146,
+        "commentsCount": 34
+    },
+    {
+        "id": 5,
         "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Agnost_AI_Launch.jpg",
         "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Agnost_AI_Launch.mp4",
          "client": "Agnost",
         "description": "Agnost is a cutting-edge AI-powered platform that revolutionizes the way businesses operate. With its advanced machine learning algorithms and intuitive user interface, Agnost enables organizations to harness the power of artificial intelligence to streamline processes, enhance decision-making, and drive innovation. From predictive analytics to natural language processing, Agnost offers a comprehensive suite of tools that empower businesses to stay ahead in today's competitive landscape.",
         "category": "Launch Film",
         "url": "https://x.com/ShubhamInTech/status/2050074244017787312",
-        "viewsCount": 23865,
-        "likesCount": 285
+        "viewsCount": 23869,
+        "likesCount": 285,
+        "commentsCount": 42
     },
     {
-        "id": 5,
+        "id": 6,
         "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Founder_Journey.jpg",
         "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Founder_journey.mp4",
         "client": "Agnost",
         "description": "The journey of Agnost's founder as they navigate the challenges and opportunities of building a revolutionary AI-powered platform.",
         "category": "Founder Story",
         "url": "https://x.com/ShubhamInTech/status/2046998021708349562",
-        "viewsCount": 32228,
-        "likesCount": 493
+        "viewsCount": 32296,
+        "likesCount": 493,
+        "commentsCount": 71
     }
 ]

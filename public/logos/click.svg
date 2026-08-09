@@ -1,0 +1,16 @@
+<svg xmlns:xlink="http://www.w3.org/1999/xlink"  xmlns="http://www.w3.org/2000/svg" viewBox="180 135 720 720" role="img" aria-labelledby="click-cursor-title click-cursor-description">
+  <title id="click-cursor-title">Click</title>
+  <desc id="click-cursor-description">The violet Click cursor mark.</desc>
+  <defs>
+    <radialGradient id="click-cursor-gradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(475 535) rotate(88) scale(430 405)">
+      <stop offset="0" stop-color="#bfaeff"/>
+      <stop offset="0.22" stop-color="#ad99ff"/>
+      <stop offset="0.48" stop-color="#927bff"/>
+      <stop offset="0.72" stop-color="#7861f2"/>
+      <stop offset="0.9" stop-color="#654be3"/>
+      <stop offset="1" stop-color="#5b43d6"/>
+    </radialGradient>
+  </defs>
+
+  <path d="M 322 177        C 482 241 651 313 820 386        C 844 396 858 420 858 446        C 858 477 842 501 813 513        C 746 532 680 548 621 562        C 613 564 607 570 605 579        C 589 645 575 709 561 770        C 554 800 532 820 503 824        C 474 828 446 812 433 783        C 374 636 316 493 258 350        C 246 321 234 292 222 263        C 212 238 216 211 235 190        C 257 165 289 163 322 177        Z" fill="url(#click-cursor-gradient)" stroke="#5b43d6" stroke-width="16" stroke-linejoin="round"/>
+</svg>

@@ -70,7 +70,7 @@ const workhorse = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "VR — Builder / storyteller ",
+  title: "VIR — Builder / storyteller ",
   description: "We tell big stories for regular sized people.",
 };
 
