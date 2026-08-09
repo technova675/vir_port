@@ -36,7 +36,8 @@
 :root {
   --hairline: rgba(175, 238, 223, 0.2);
   /* Hero type scale: 96px at a 1905px viewport === 5.04vw */
-  --hero-size: clamp(2.25rem, 5.04vw, 6rem);
+  /* Sized so line 1 wraps into a block that clears the rocket. */
+  --hero-size: clamp(1.5rem, 3.1vw, 3.5rem);
 }
 
 * {
@@ -442,6 +443,11 @@ html.lenis body {
   gap: 4px;
   z-index: 100;
   transition: all 0.8s var(--ease-out-expo);
+  /* The hero's lower band is bright (concrete, exhaust plume), so bone-white
+     chevrons vanished against it. A dark shadow keeps them legible on any
+     part of the photo without adding a visible scrim. */
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.85))
+    drop-shadow(0 0 10px rgba(0, 0, 0, 0.55));
 }
 .scroll-arrow {
   width: 20px;
@@ -460,147 +466,244 @@ html.lenis body {
 @keyframes arrow-blink {
   0%,
   100% {
-    opacity: 0.15;
+    /* Was 0.15 — near-invisible for most of each cycle over a bright photo. */
+    opacity: 0.5;
   }
   50% {
-    opacity: 0.9;
+    opacity: 1;
   }
 }
 
 /* ------------------------------------------------------------------
-   Hero canvas
+   Hero stage — a pinned still, panned top-to-bottom as you scroll
 ------------------------------------------------------------------ */
-#video-container {
-  position: fixed;
-  inset: 0;
-  height: 100svh;
+.hero-stage {
+  background: #000;
   z-index: 1;
 }
-#image-canvas {
-  position: absolute;
-  inset: 0;
+
+/* Desktop: 60vh taller than the viewport — that overflow is the travel the
+   scroll-driven pan works with. */
+.hero-pan {
+  height: 160vh;
+}
+.hero-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 /* ------------------------------------------------------------------
-   Hero text
+   Mobile hero — the portrait crop, panned on scroll like desktop, with
+   line 1 only. Line 2 is not placed yet.
 ------------------------------------------------------------------ */
+@media (max-width: 900px) {
+  /* Travel vs side-crop is a direct trade here, because the export (941x1672,
+     ratio 0.563) is WIDER than a phone viewport (~0.46). Filling the height
+     means cover throws the sides away, and every extra bit of pan height
+     throws away more:
+        100svh -> 82% of the width visible, but zero travel
+        120svh -> 68% visible, ~170px travel   <- chosen
+        152svh -> 54% visible, ~440px travel   (cut the figure in half)
+     120svh is the most travel that still fits the figure in frame. A proper
+     fix needs a taller export (~941x2850), not a CSS change. */
+  .hero-pan {
+    /* svh, not vh: vh is the *largest* viewport height on mobile, so the
+       travel would be mismeasured while the browser chrome is showing. */
+    height: 148svh;
+  }
+
+  /* The stage takes its height from Tailwind's h-screen (100vh), and on
+     mobile 100vh is the LARGE viewport — the height with browser chrome
+     hidden. With the address bar and toolbar showing, the stage therefore
+     runs off the bottom of what is actually visible, and anything positioned
+     from `bottom` (line 2) is pushed under the toolbar. svh is the height
+     with chrome showing, which is what the overlay must be measured against. */
+  .hero-stage {
+    height: 100svh;
+  }
+
+  /* 22%, not center: the figure stands at x 9%-34% of the frame, and a
+     centred 68% window starts at 16% — which sliced him down the middle.
+     This shifts the window to 7%-75%, so he is whole and the rocket is
+     still in frame. Costs the water tower on the right. */
+  .hero-img {
+    object-fit: cover;
+    object-position:   center;
+  }
+
+  /* Line 2 has no mobile placement yet — hidden rather than left to land
+     wherever the desktop 55%/-60% offset puts it, which is off the right
+     edge on a phone. Its scroll timeline is already desktop-gated in
+     HeroText.tsx, so nothing is animating it here.
+
+     The mobile #text-1 / #text-2 overrides do NOT live here — a media query
+     adds no specificity, so an `#text-1` rule placed above the base
+     `#text-1` rule loses the tie on source order and silently does nothing.
+     They sit after the hero-text section below. */
+}
+
+/* ------------------------------------------------------------------
+   Hero text — two lines placed against the photo
+------------------------------------------------------------------ */
+/* Absolute, not fixed: GSAP's pin transforms an ancestor, which makes a
+   fixed child resolve against that ancestor instead of the viewport. */
 .content-overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  height: 100svh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   pointer-events: none;
   z-index: 10;
 }
-.combined-text-wrapper {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-.text-section {
-  max-width: 1152px;
-  font-size: var(--hero-size);
-  line-height: 0.95;
-  text-align: center;
-  pointer-events: none;
-}
-#text-1,
-#text-2 {
-  opacity: 0;
-  white-space: nowrap;
-}
-.text-gradient-bg {
+
+.hero-line {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 170%;
-  height: 200%;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
-    rgba(8, 7, 10, 0.45) 0px,
-    rgba(8, 7, 10, 0.1) 40%,
-    transparent 70%
-  );
-  pointer-events: none;
-  z-index: -1;
-}
-.we-tell {
-  margin-bottom: 8px;
-}
-.text-1-line,
-.text-2-line {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 0.3em;
-}
-.text-2-line {
-  margin-bottom: 0.05em;
-}
-.stories-word {
-  font-weight: 500;
-}
-.sized-people-word {
-  font-style: italic;
+  font-family: var(--font-hero-display), system-ui, sans-serif;
+  font-size: var(--hero-size);
+  font-weight: 700;
+  /* Expanded cut — the width axis is why Archivo is loaded as a variable. */
+  font-variation-settings: "wdth" 112;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  text-transform: uppercase;
+  color: var(--color-bone);
+  opacity: 0;
 }
 
-/* The two display words — a left-to-right fill wipe */
+/* Line 1 — right of the rocket, at roughly its altitude. */
+#text-1 {
+  right: 7vw;
+  top: 22%;
+  /* Narrow enough to wrap into a block that clears the rocket entirely. */
+  max-width: 13ch;
+  text-align: right;
+}
+
+/* Line 2 — on the lower band, nudged right of centre. */
+#text-2 {
+  left: 55%;
+  transform: translateX(-60%);
+  bottom: 10%;
+  max-width: 30ch;
+  text-align: center;
+}
+
+/* Line 1 resolves character by character out of blur. */
+.hero-char-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+.hero-char {
+  display: inline-block;
+  white-space: pre;
+  will-change: transform, filter, opacity;
+}
+
+/* Line 2 wipes up from behind its own edge, word by word. */
+.hero-word-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.06em;
+}
+.hero-word-inner {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* The two key words — both rest filled; each unfills only itself on hover. */
 .big-word,
 .regular-word {
-  font-family: var(--font-display);
-  font-weight: 400;
-  text-transform: uppercase;
   position: relative;
+  font-weight: 700;
+  padding: 0.04em 0.22em;
   background-image: linear-gradient(
     to right,
     #ffffff 50%,
     rgba(0, 0, 0, 0) 50%
   );
   background-size: 200% 100%;
+  /* Without this the gradient tiles: at the unfilled position (100% 0) the
+     neighbouring tile's white half starts right at the element's edge, which
+     showed as a white sliver either side of the word on hover. */
+  background-repeat: no-repeat;
+  background-position: 0 0; /* filled at rest */
+  color: var(--color-ink-2);
+  pointer-events: auto;
+  cursor: pointer;
   transition:
     background-position 0.6s ease-out,
     color 0.4s ease,
     transform 0.6s var(--ease-out-expo);
 }
-.big-word {
-  padding: 0.1em 0.3em;
-  background-position: 0 0; /* filled at rest */
-  color: var(--color-ink-2);
-  transform: rotate(-2deg) scale(1.1);
-  will-change: transform;
-  z-index: 10001;
-  pointer-events: auto;
-  cursor: pointer;
-}
-.big-word.unfilled {
+.big-word:hover,
+.regular-word:hover {
   background-position: 100% 0;
   color: var(--color-bone);
-  transform: rotate(0deg) scale(1);
-}
-.regular-word {
-  padding: 0.05em 0.2em;
-  background-position: 100% 0; /* unfilled at rest */
-  color: var(--color-bone);
-  pointer-events: auto;
-  cursor: pointer;
-}
-.regular-word.filled {
-  background-position: 0 0;
-  color: var(--color-ink-2);
-  transform: rotate(-2deg) scale(1.05);
 }
 
-#spacer {
-  position: relative;
-  z-index: 0;
+/* ------------------------------------------------------------------
+   Mobile hero text — must come AFTER the #text-1 / #text-2 rules above.
+   Media queries carry no specificity of their own, so these would lose
+   the ID-vs-ID tie on source order if they sat with the rest of the
+   mobile hero block further up.
+------------------------------------------------------------------ */
+@media (max-width: 900px) {
+  /* Centred in the column and sat on the lower band. Not the desktop
+     55% / -60% offset, which pushes the longest word off the right edge at
+     this width. */
+  #text-2 {
+    font-size: clamp(1rem, 5vw, 1.6rem);
+    left: 0;
+    right: 0;
+    bottom: 12%;
+    /* The road's yellow centre line runs down the middle of the frame, and
+       object-position is centred, so the middle of the frame is the middle
+       of the viewport — left/right 0 with auto margins parks the block right
+       on it, equal space either side.
+       16ch, not 13ch: AMBITIOUS is 9 characters plus the pill's 0.14em
+       padding either side, so 13ch was too tight to hold "FOR AMBITIOUS"
+       together and it broke into three lines. 16ch fits that pair but stays
+       well under the ~22ch needed to pull FOUNDERS up, so the break lands
+       where the desktop layout puts it. */
+    max-width: 16ch;
+    margin-inline: auto;
+    padding: 0;
+    /* Auto margins centre the block on the road's centre line; this nudges
+       it off that centre to the right, clear of the figure on the left. */
+    transform: translateX(4vw);
+    text-align: center;
+    font-variation-settings: "wdth" 100;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+  }
+
+  #text-2 .regular-word {
+    padding: 0.02em 0.14em;
+  }
+
+  /* At 148svh the crop shows x 22.5%-77.5% of the frame, which puts the
+     rocket at ~55% of the viewport width and leaves the right ~45% clear.
+     Sat up by the nose of the rocket, tight to the top. */
+  #text-1 {
+    font-size: clamp(1.5rem, 4.2vw, 1.35rem);
+    right: 5vw;
+    top: 10%;
+    /* ~8 characters is the widest run that still clears the exhaust plume:
+       it breaks the copy to "WE DO / LAUNCH / & PRODUCT / VIDEOS". */
+    max-width: 8ch;
+    text-align: right;
+    /* The desktop 112 width axis eats horizontal room that the narrow band
+       does not have; back to normal width. */
+    font-variation-settings: "wdth" 100;
+    /* Less sky to hide in on this crop, so the copy carries its own
+       contrast instead of relying on the photo behind it. */
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+  }
+
+  /* The pill padding stays proportionally chunky at this size. */
+  #text-1 .big-word {
+    padding: 0.02em 0.14em;
+  }
 }
 
 /* ------------------------------------------------------------------
@@ -982,6 +1085,22 @@ html.lenis body {
 /* ------------------------------------------------------------------
    Film card (portfolio)
 ------------------------------------------------------------------ */
+/* Section header + the breathing room that separates the portfolio from
+   the end of the hero pin. */
+.portfolio-intro {
+  position: relative;
+  z-index: 10;
+  background: #000;
+  padding: 24vh 6vw 10vh;
+  text-align: center;
+}
+.portfolio-heading {
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--pp-fg);
+}
+
 .portfolio-list {
   position: relative;
   z-index: 10;
@@ -1007,6 +1126,11 @@ html.lenis body {
      below. */
   padding: 0 3.2vw;
   margin-bottom: 0.4vw;
+  /* The pop-out depends on a perspective ancestor — without it the card's
+     rotateX flattens into a plain squash and nothing appears to come
+     forward. Set here rather than on the card so each card gets its own
+     vanishing point at its own centre. */
+  perspective: 1600px;
 }
 .film-card-section:last-child {
   margin-bottom: 0;
@@ -1024,6 +1148,11 @@ html.lenis body {
   border-radius: 24px;
   overflow: hidden;
   background: #000;
+  /* Static shadow, not an animated one: it sells the lift at centre while
+     the scale/tilt do the moving, and animating box-shadow would repaint
+     the whole card every frame. */
+  box-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.65);
+  will-change: transform;
 }
 .film-card.is-playing .film-card-overlay {
   opacity: 0;
@@ -1680,12 +1809,14 @@ html.lenis body {
    as the section scrubs; whatever lands in the center slot is "active". */
 .client-logos-window {
   position: relative;
-  width: 20vw;
-  min-width: 260px;
+  /* Wide enough for the widest row (a 6:1 wordmark plus its label) —
+     the window clips, so anything that overruns is silently cut off. */
+  width: 34vw;
+  min-width: 560px;
   /* Reference keeps this column pulled in from the edge (~60-79vw of a
      1920px viewport), not flush against it — pull it in from the
      space-between's default right-edge position to match. */
-  margin-right: 15vw;
+  margin-right: 6vw;
   overflow: hidden;
   -webkit-mask-image: linear-gradient(
     to bottom,
@@ -1716,23 +1847,34 @@ html.lenis body {
   gap: 12px;
   width: 100%;
 }
-/* Some assets are icon-only, so the brand name is supplied as `text` and
-   set beside the mark; the mark then shrinks to icon size instead of
-   spanning the row. */
-.client-logo.with-text .client-logo-mark {
+/* Every logo gets the same cap height and keeps its own aspect ratio —
+   the sizer <img> inside supplies the width. Wide wordmarks and square
+   icons therefore read as one set instead of being forced into a box. */
+.client-logo-icon {
+  position: relative;
+  display: block;
   flex: 0 0 auto;
+  height: clamp(36px, 3vw, 56px);
+  /* Ultra-wide wordmarks would otherwise push the row past the window's
+     clip edge. Capping the width makes mask-size:contain scale them down
+     instead of cropping them. */
+  max-width: 240px;
+}
+.client-logo-sizer {
+  display: block;
+  height: 100%;
   width: auto;
-  aspect-ratio: 1 / 1;
-  mask-position: center;
-  -webkit-mask-position: center;
+  max-width: 100%;
+  object-fit: contain;
+  visibility: hidden;
 }
 .client-logo-text {
   flex: 0 0 auto;
-  font-size: clamp(24px, 2.2vw, 38px);
+  font-size: clamp(20px, 1.8vw, 30px);
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.7);
   transition: color 0.3s ease-out;
 }
 .client-logo.active .client-logo-text {
@@ -1742,14 +1884,14 @@ html.lenis body {
    flat (gray dim / pink active) with no bleed, matching the reference —
    its "highlight" isn't a box behind the logo, the logo itself recolors. */
 .client-logo-mark {
-  width: 100%;
-  height: 60%;
-  background-color: rgba(255, 255, 255, 0.35);
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.7);
   mask-repeat: no-repeat;
-  mask-position: right center;
+  mask-position: center;
   mask-size: contain;
   -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: right center;
+  -webkit-mask-position: center;
   -webkit-mask-size: contain;
   transition: background-color 0.3s ease-out;
 }
@@ -1814,7 +1956,7 @@ html.lenis body {
     font-weight: 600;
     letter-spacing: -0.01em;
     white-space: nowrap;
-    color: rgba(255, 255, 255, 0.35);
+    color: rgba(255, 255, 255, 0.7);
     transition: color 0.35s ease-out;
   }
   .client-logos-marquee-img.is-centered .client-logos-marquee-text {
@@ -1830,7 +1972,7 @@ html.lenis body {
   .client-logos-marquee-mark {
     position: absolute;
     inset: 0;
-    background-color: rgba(255, 255, 255, 0.35);
+    background-color: rgba(255, 255, 255, 0.7);
     mask-repeat: no-repeat;
     mask-position: center;
     mask-size: contain;
@@ -1923,6 +2065,9 @@ html.lenis body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* The chip is landscape but the source is a 4:5 portrait — a centred
+     crop lands on the chest, so bias upward to keep the face in frame. */
+  object-position: 50% 22%;
 }
 
 .cta-button {

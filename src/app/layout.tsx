@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, Chakra_Petch, Major_Mono_Display } from "next/font/google";
+import {
+  Inter,
+  Chakra_Petch,
+  Major_Mono_Display,
+  Archivo,
+} from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import "./vhs.css";
 import SmoothScroll from "@/components/SmoothScroll";
 
 const inter = Inter({
@@ -22,6 +26,13 @@ const majorMono = Major_Mono_Display({
   variable: "--font-major-mono",
   subsets: ["latin"],
   weight: ["400"],
+});
+
+// Hero only. Variable font: the `wdth` axis is what gives the Expanded cut.
+const archivo = Archivo({
+  variable: "--font-hero-display",
+  subsets: ["latin"],
+  axes: ["wdth"],
 });
 
 const neueBrucke = localFont({
@@ -59,7 +70,7 @@ const workhorse = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "VR — Multimedia",
+  title: "VR — Builder / storyteller ",
   description: "We tell big stories for regular sized people.",
 };
 
@@ -73,7 +84,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${chakra.variable} ${majorMono.variable} ${neueBrucke.variable} ${nbInternational.variable} ${p22Parrish.variable} ${aeonik.variable} ${workhorse.variable} antialiased`}
+      className={`${inter.variable} ${chakra.variable} ${majorMono.variable} ${archivo.variable} ${neueBrucke.variable} ${nbInternational.variable} ${p22Parrish.variable} ${aeonik.variable} ${workhorse.variable} antialiased`}
     >
       <body>
         <SmoothScroll>{children}</SmoothScroll>

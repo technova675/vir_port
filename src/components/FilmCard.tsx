@@ -131,7 +131,12 @@ export default function FilmCard({ data }: { data: FilmCardData }) {
       // quickSetter skips GSAP's property parsing on every call — the values
       // are written straight to the transform, which matters when this runs
       // once per frame per card.
-      const setCard = gsap.quickSetter(card, "scale") as (v: number) => void;
+      // One combined transform setter rather than separate scale/rotation
+      // setters — GSAP would otherwise rebuild the matrix twice per frame.
+      const setCard = gsap.quickSetter(card, "css") as (v: {
+        scale: number;
+        rotationX: number;
+      }) => void;
       const setLayer = layers.map(
         (el) => gsap.quickSetter(el, "yPercent", "%") as (v: number) => void,
       );
@@ -163,7 +168,19 @@ export default function FilmCard({ data }: { data: FilmCardData }) {
             }
           }
 
-          setCard(1 - away * 0.06);
+          // Pop-out: away from centre the card sits back and tilted (small,
+          // rotated on X so its far edge recedes); at centre it comes past
+          // flat — scale > 1 — so it reads as lifting off the page toward
+          // the viewer rather than merely un-shrinking. eased so the pop
+          // happens in the last stretch of the approach, not linearly.
+          const settle = 1 - away * away; // 0 at the edges, 1 at centre
+          setCard({
+            scale: 0.9 + settle * 0.12,
+            // Sign follows k so a card below the fold tips its top edge away
+            // and a card leaving above tips the other way — same as looking
+            // at a flat panel travelling past you.
+            rotationX: lowPower ? 0 : k * 7,
+          });
         },
       });
     }, section);

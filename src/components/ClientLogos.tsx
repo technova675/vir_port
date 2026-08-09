@@ -175,15 +175,29 @@ export default function ClientLogos() {
                 style={{ height: ITEM_HEIGHT }}
                 key={logo.key}
               >
-                <div
-                  className="client-logo-mark"
-                  style={{
-                    maskImage: `url(${logo.src})`,
-                    WebkitMaskImage: `url(${logo.src})`,
-                  }}
-                  role="img"
-                  aria-label={logo.alt}
-                />
+                <span className="client-logo-icon">
+                  {/* Invisible sizer. A masked element has no intrinsic
+                      size, so the real <img> supplies each logo's aspect
+                      ratio and the mask paints over it. Without this, wide
+                      wordmarks (Agnost AI, Duo) got squashed into the
+                      square box the mark used to assume. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    className="client-logo-sizer"
+                    src={logo.src}
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <span
+                    className="client-logo-mark"
+                    style={{
+                      maskImage: `url(${logo.src})`,
+                      WebkitMaskImage: `url(${logo.src})`,
+                    }}
+                    role="img"
+                    aria-label={logo.alt}
+                  />
+                </span>
                 {logo.text ? (
                   <span className="client-logo-text">{logo.text}</span>
                 ) : null}

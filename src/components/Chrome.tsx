@@ -25,15 +25,14 @@ export default function Chrome() {
       <div className="ui-gradient-top" />
       <div className="ui-gradient-bottom" />
 
-      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {/* eslint-disable-next-line @next/next/no-img-element 
       <img
         id="logo"
         src="/logo.png"
         alt="Logo"
         className={scrolled ? "shrunk" : undefined}
         onClick={() => scrollToSelector("body")}
-      />
-
+      />*/}
       <nav className={`scroll-nav${scrolled ? " visible" : ""}`}>
         {SCROLL_SECTIONS.map((s, i) => (
           <button

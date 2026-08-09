@@ -56,6 +56,12 @@ export default function Portfolio() {
     // and type tokens) to the portfolio only — nothing else on the page
     // inherits it.
     <div className="portfolio-premium">
+      {/* Also acts as the gap between the hero pin and the first card —
+          without it the card butts straight up against the hero image. */}
+      <header className="portfolio-intro">
+        <h2 className="portfolio-heading">Selected Works</h2>
+      </header>
+
       <div
         id="portfolio-section"
         className="portfolio-list"

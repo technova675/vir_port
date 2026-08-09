@@ -22,26 +22,23 @@ export default function SmoothScroll({
       return;
     }
 
-    // Touch devices already have hardware-driven momentum scrolling that runs
-    // off the main thread. Layering Lenis on top buys nothing visually and
-    // moves every scroll frame back onto the main thread, where it competes
-    // with the scrubbed card animations. Anchor scrolling falls back to the
-    // native smooth behaviour below.
-    if (window.matchMedia("(pointer: coarse)").matches) {
-      const onNativeScrollTo = (e: Event) => {
-        const { target } = (e as CustomEvent<{ target: string }>).detail ?? {};
-        const el = target && document.querySelector(target);
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      };
-      window.addEventListener("lenis:scroll-to", onNativeScrollTo);
-      return () =>
-        window.removeEventListener("lenis:scroll-to", onNativeScrollTo);
-    }
+    // Without syncTouch, a touch device scrolls with hardware momentum that
+    // runs off the main thread — the browser moves the page, then tells JS
+    // about it afterwards. Anything scrubbed to scroll position (the hero
+    // pan) therefore arrives a frame or more late, which reads as lag and
+    // stepping. syncTouch hands touch scrolling to Lenis' own RAF loop, the
+    // same one ScrollTrigger already reads from, so the pan tracks the
+    // finger. The trade is that scrolling is now main-thread work.
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
 
     const lenis = new Lenis({
       duration: 1.1,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
+      syncTouch: coarse,
+      // Native touch scrolling travels further per swipe than Lenis' 1:1
+      // default, so without this the page feels heavy once syncTouch is on.
+      touchMultiplier: 1.6,
     });
 
     lenis.on("scroll", ScrollTrigger.update);

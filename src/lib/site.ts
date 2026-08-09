@@ -15,17 +15,28 @@ export const FRAMES = {
    *     public/sequence/sequoia_%03d.jpg
    * then set `first` to the lowest file number and `count` to the number
    * of files produced.
+   *
+   * Currently the hero is a SINGLE still, not the sequence: `first: 174`
+   * + `count: 1` pins it to sequoia_174.jpeg (the launchpad shot). To go
+   * back to the scrubbing sequence set `first: 175, count: 503`.
+   *
+   * That still was dropped in as .jpeg while every sequence frame is .jpg,
+   * hence the extension branch below — without it the URL 404s and, because
+   * FrameSequence swallows load errors, the canvas just stays black.
    */
   baseUrl: "/sequence",
-  pattern: (n: number) => `sequoia_${String(n).padStart(3, "0")}.jpg`,
-  first: 175,
-  count: 503,
+  pattern: (n: number) =>
+    n === 174
+      ? "sequoia_174.jpeg"
+      : `sequoia_${String(n).padStart(3, "0")}.jpg`,
+  first: 174,
+  count: 1,
   /** Coarse pass stride — every Nth frame loads before the backfill. */
   stride: 16,
   /** Parallel image requests during backfill. */
   concurrency: 8,
   /** How many viewport-heights the hero scrub lasts. */
-  scrollVh: 500,
+  scrollVh: 200,
 } as const;
 
 export const frameUrl = (n: number) =>
@@ -77,20 +88,19 @@ export const FILM_CARDS = PORTFOLIO_ITEMS.map((item, i) => ({
 
 /** Client logo SVGs, served locally from public/logos. */
 export const CLIENT_LOGOS = [
-  { key: "agnost-ai", src: "/logos/agnost-ai-horizontal.svg", text: "", alt: "Agnost AI" },
-  { key: "context-dev", src: "/logos/context_dev.svg", text: "Context.dev", alt: "Context.dev" },
-  { key: "duo", src: "/logos/duo.svg", text: "", alt: "Duo" },
-  { key: "tsenta", src: "/logos/tsenta-black.svg", text: "Tsenta", alt: "Tsenta" },
+  { key: "agnost-ai", src: "/logos/agnost-ai-horizontal.svg", text: "YC (S26)", alt: "Agnost AI" },
+  { key: "context-dev", src: "/logos/context_dev.svg", text: "Context.dev YC (S26)", alt: "Context.dev" },
+  { key: "duo", src: "/logos/duo.svg", text: "YC (S26)", alt: "Duo" },
+  { key: "tsenta", src: "/logos/tsenta-black.svg", text: "Tsenta YC (S26)", alt: "Tsenta" },
   { key: "agglayer", src: "/logos/agglayer.svg", text: "", alt: "Agglayer" },
   { key: "aptos", src: "/logos/aptos.svg", text: "", alt: "Aptos" },
   { key: "biconomy", src: "/logos/biconomy.svg", text: "", alt: "Biconomy" },
 ] as const;
 
-/** Call-to-action section — image + copy from the reference site's CDN. */
+/** Call-to-action section — image + copy. */
 export const CTA = {
-  image:
-    "https://rhythm-influence.transforms.svdcdn.com/staging/Dj-Girl.png?w=480&h=440&q=85&auto=format&fit=crop&dm=1730837004&s=68f9b95c748da17b50af0c36392a626c",
-  imageAlt: "Dj Girl",
+  image: "/vir.jpeg",
+  imageAlt: "Vir",
   buttonLabel: "Get Started",
   buttonHref: "#contact",
   subtext: "",
@@ -113,8 +123,6 @@ export const CTA = {
 export const SITE = {
   name: "VR",
   email: "vir@thevirofficial.com",
-  loaderTitle: "Portfolio\nShowreel Site",
-  ratingBadge: "VR",
 } as const;
 
 export const SOCIALS = [

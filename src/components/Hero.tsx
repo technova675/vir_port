@@ -1,163 +1,84 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { FrameSequence } from "@/lib/frameSequence";
-import { FRAMES } from "@/lib/site";
-import Preloader from "./Preloader";
+import HeroText from "./HeroText";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/** Scroll distance the pan is spread across, as a % of viewport height. */
+const SCROLL_LENGTH = "+=200%";
+
 export default function Hero() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const spacerRef = useRef<HTMLDivElement>(null);
-  const rootRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
 
-  const [progress, setProgress] = useState(0);
-  const [ready, setReady] = useState(false);
+  useLayoutEffect(() => {
+    const stage = stageRef.current;
+    const image = imageRef.current;
+    if (!stage || !image) return;
 
-  /* ---------------- frame sequence -> canvas ---------------- */
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const spacer = spacerRef.current;
-    if (!canvas || !spacer) return;
-
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    const seq = new FrameSequence((loaded, total) =>
-      setProgress(loaded / total),
-    );
-
-    // Scroll progress -> frame index. Kept in a plain object so the
-    // ScrollTrigger callback stays allocation-free.
-    const state = { frame: 0 };
-    let lastPainted = -1;
-    let rafId = 0;
-
-    const paint = () => {
-      const target = Math.round(state.frame);
-      if (target !== lastPainted) {
-        const img = seq.nearest(target);
-        if (img) {
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          lastPainted = target;
-        }
-      }
-      rafId = requestAnimationFrame(paint);
-    };
-
-    let trigger: ScrollTrigger | undefined;
-
-    seq.start().then(() => {
-      setReady(true);
-      lastPainted = -1;
-      rafId = requestAnimationFrame(paint);
-
-      trigger = ScrollTrigger.create({
-        trigger: spacer,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: true,
-        onUpdate: (self) => {
-          state.frame = self.progress * (seq.total - 1);
-        },
-      });
-    });
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      trigger?.kill();
-      seq.dispose();
-    };
-  }, []);
-
-  /* ---------------- hero text timeline ---------------- */
-  useEffect(() => {
-    if (!ready) return;
-    const spacer = spacerRef.current;
-    if (!spacer) return;
-
+    // Runs on every size. The travel is derived from the laid-out element
+    // (offsetHeight - viewport), so the same code drives both crops — only
+    // the .hero-pan height differs between them, and that lives in CSS.
     const ctx = gsap.context(() => {
-      gsap.set("#text-2", { opacity: 0 });
+      gsap.set(image, { force3D: true });
 
-      const tl = gsap.timeline({
+      gsap.to(image, {
+        // Function value + invalidateOnRefresh => recomputed on every resize.
+        y: () => -(image.offsetHeight - window.innerHeight),
+        ease: "none",
         scrollTrigger: {
-          trigger: spacer,
+          trigger: stage,
           start: "top top",
-          end: "bottom bottom",
+          end: SCROLL_LENGTH,
           scrub: 1,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
         },
       });
-
-      // Line one appears, then line two joins it below — both held
-      // together — then only line one leaves, line two stays in place.
-      tl.to("#text-1", { opacity: 1, duration: 0.2 })
-        .to("#text-2", { opacity: 1, duration: 0.2 }, 0.15)
-        .to("#text-1", { opacity: 0, y: -40, duration: 0.2 }, 0.5)
-        .to("#text-2", { opacity: 0, y: -40, duration: 0.15 }, 0.85);
-    }, rootRef);
+    }, stage);
 
     return () => ctx.revert();
-  }, [ready]);
-
-  /* ---------------- display-word hover wipes ---------------- */
-  useEffect(() => {
-    const big = document.querySelector<HTMLElement>(".big-word");
-    const regular = document.querySelector<HTMLElement>(".regular-word");
-
-    const bigEnter = () => big?.classList.add("unfilled");
-    const bigLeave = () => big?.classList.remove("unfilled");
-    const regEnter = () => regular?.classList.add("filled");
-    const regLeave = () => regular?.classList.remove("filled");
-
-    big?.addEventListener("mouseenter", bigEnter);
-    big?.addEventListener("mouseleave", bigLeave);
-    regular?.addEventListener("mouseenter", regEnter);
-    regular?.addEventListener("mouseleave", regLeave);
-
-    return () => {
-      big?.removeEventListener("mouseenter", bigEnter);
-      big?.removeEventListener("mouseleave", bigLeave);
-      regular?.removeEventListener("mouseenter", regEnter);
-      regular?.removeEventListener("mouseleave", regLeave);
-    };
-  }, [ready]);
+  }, []);
 
   return (
-    <div ref={rootRef}>
-      <Preloader progress={progress} ready={ready} />
-
-      <div id="video-container">
-        <canvas id="image-canvas" ref={canvasRef} width={1920} height={1080} />
+    <section
+      ref={stageRef}
+      className="hero-stage relative h-screen w-full overflow-hidden"
+    >
+      {/* Taller than the viewport, so there is always more image below to
+          pan into. Height lives in CSS, not an inline style, so the mobile
+          media query can tune it — an inline style would always beat it. */}
+      <div
+        ref={imageRef}
+        className="hero-pan absolute inset-x-0 top-0 will-change-transform"
+      >
+        {/* <picture>, not next/image: the crops have different aspect ratios
+            (1672x941 landscape vs 941x1672 portrait) and this swaps them with
+            a single download. Two <Image>s would fetch both. */}
+        <picture>
+          <source
+            media="(max-width: 900px)"
+            srcSet="/hero_mobile_1.png"
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/hero_section.png"
+            alt="A Falcon 9 lifting off as a lone figure watches from the pad road"
+            className="hero-img"
+            fetchPriority="high"
+            decoding="async"
+            // The pin's spacer height depends on the laid-out stage, so
+            // recompute once the image has settled.
+            onLoad={() => ScrollTrigger.refresh()}
+          />
+        </picture>
       </div>
 
-      <div className="content-overlay" id="combined-text-overlay">
-        <div className="combined-text-wrapper">
-          <div className="text-section" id="text-1">
-            <div className="text-gradient-bg" />
-            <div className="we-tell">We tell</div>
-            <div className="text-1-line">
-              <span className="big-word">BIG</span>
-              <span className="stories-word">stories</span>
-            </div>
-          </div>
-
-          <div className="text-section" id="text-2">
-            <div className="text-gradient-bg" />
-            <div className="text-2-line">
-              <span className="for-word">for</span>
-              <span className="regular-word" id="regular-word-trigger">
-                REGULAR
-              </span>
-            </div>
-            <div className="sized-people-word">sized people</div>
-          </div>
-        </div>
-      </div>
-
-      <div id="spacer" ref={spacerRef} style={{ height: `${FRAMES.scrollVh}vh` }} />
-    </div>
+      <HeroText scrollLength={SCROLL_LENGTH} />
+    </section>
   );
 }
