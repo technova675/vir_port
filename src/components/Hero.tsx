@@ -62,7 +62,7 @@ export default function Hero() {
         <picture>
           <source
             media="(max-width: 900px)"
-            srcSet="/hero_mobile_1.png"
+            srcSet="/hero_section_mobile.png"
           />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

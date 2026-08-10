@@ -417,20 +417,6 @@ export default function FilmCard({ data }: { data: FilmCardData }) {
                 <span className="film-index-rule" aria-hidden="true" />
                 <span className="film-index-tag">{data.eyebrow}</span>
               </div>
-
-              {/* <div className="film-stats">
-                {data.stats.map((s, si) => (
-                  <div
-                    className="film-stat"
-                    key={s.label}
-                    data-reveal
-                    data-parallax={15 + si * 8}
-                  >
-                    <div className="film-stat-value">{s.value}</div>
-                    <div className="film-stat-label">{s.label}</div>
-                  </div>
-                ))}
-              </div> */}
             </div>
 
             <div className="film-card-row film-card-row-bottom">
