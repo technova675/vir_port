@@ -417,6 +417,15 @@ export default function FilmCard({ data }: { data: FilmCardData }) {
                 <span className="film-index-rule" aria-hidden="true" />
                 <span className="film-index-tag">{data.eyebrow}</span>
               </div>
+
+              {/* Batch stamp, opposite the index. Rendered only when the
+                  entry has one — a client with no accelerator batch shows
+                  nothing rather than an empty chip. */}
+              {data.batch && (
+                <div className="film-batch" data-reveal data-parallax="12">
+                  {data.batch}
+                </div>
+              )}
             </div>
 
             <div className="film-card-row film-card-row-bottom">

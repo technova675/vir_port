@@ -9,19 +9,21 @@
         "url": "https://x.com/mynameisyahia/status/2085065519515009397",
         "viewsCount": 203486,
         "likesCount": 812,
-        "commentsCount": 226
+        "commentsCount": 226,
+        "batch": "YC S26"
     },
     {
         "id": 2,
         "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/quality/agnost_yc.jpeg",
         "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/AGNOST_LAUNCH.mp4",
-        "client": "Agnost",
+        "client": "Agnost ",
         "description": "Agnost is a cutting-edge AI-powered platform that revolutionizes the way businesses operate. With its advanced machine learning algorithms and intuitive user interface, Agnost enables organizations to harness the power of artificial intelligence to streamline processes, enhance decision-making, and drive innovation. From predictive analytics to natural language processing, Agnost offers a comprehensive suite of tools that empower businesses to stay ahead in today's competitive landscape.",
         "category": "Launch Film",
         "url": "https://x.com/ShubhamInTech/status/2080683611070800180",
         "viewsCount": 93792,
         "likesCount": 619,
-        "commentsCount": 213
+        "commentsCount": 213,
+        "batch": "YC S26"
     },
      {
         "id": 3,
@@ -33,7 +35,8 @@
         "url": "https://x.com/pulkit_gupta2/status/2083232873071730766",
         "viewsCount": 57491,
         "likesCount": 371,
-        "commentsCount": 81
+        "commentsCount": 81,
+        "batch": "YC S26"
     },
     {
         "id": 4,
@@ -45,7 +48,8 @@
         "url": "https://x.com/ShubhamInTech/status/2078148731866923224",
         "viewsCount": 27685,
         "likesCount": 146,
-        "commentsCount": 34
+        "commentsCount": 34,
+        "batch": "YC S26"
     },
     {
         "id": 5,
@@ -57,7 +61,8 @@
         "url": "https://x.com/ShubhamInTech/status/2050074244017787312",
         "viewsCount": 23869,
         "likesCount": 285,
-        "commentsCount": 42
+        "commentsCount": 42,
+        "batch": "YC S26"
     },
     {
         "id": 6,
@@ -69,6 +74,7 @@
         "url": "https://x.com/ShubhamInTech/status/2046998021708349562",
         "viewsCount": 32296,
         "likesCount": 493,
-        "commentsCount": 71
+        "commentsCount": 71,
+        "batch": "YC S26"
     }
 ]

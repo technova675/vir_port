@@ -4,6 +4,7 @@ import {
   Chakra_Petch,
   Major_Mono_Display,
   Archivo,
+  Archivo_Black,
 } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -33,6 +34,15 @@ const archivo = Archivo({
   variable: "--font-hero-display",
   subsets: ["latin"],
   axes: ["wdth"],
+});
+
+// Hero line 1. A separate static family from `archivo` above, not a weight of
+// it — Archivo Black is its own cut, and its letterforms are heavier than the
+// variable family reaches at 700.
+const archivoBlack = Archivo_Black({
+  variable: "--font-hero-black",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 const neueBrucke = localFont({
@@ -84,7 +94,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${chakra.variable} ${majorMono.variable} ${archivo.variable} ${neueBrucke.variable} ${nbInternational.variable} ${p22Parrish.variable} ${aeonik.variable} ${workhorse.variable} antialiased`}
+      className={`${inter.variable} ${chakra.variable} ${majorMono.variable} ${archivo.variable} ${archivoBlack.variable} ${neueBrucke.variable} ${nbInternational.variable} ${p22Parrish.variable} ${aeonik.variable} ${workhorse.variable} antialiased`}
     >
       <body>
         <SmoothScroll>{children}</SmoothScroll>

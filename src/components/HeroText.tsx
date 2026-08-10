@@ -210,15 +210,23 @@ export default function HeroText({
 
   return (
     <div ref={overlayRef} className="content-overlay">
+      {/* Two explicit blocks rather than one run of text left to wrap. The
+          break after the boxed word is part of the composition — the second
+          line is deliberately smaller and quieter — so it is structure, not
+          something a `max-width` in ch should be guessing at. */}
       <div id="text-1" className="hero-line">
-        {/* Single space: runs of whitespace now render as one collapsible
-            gap, so the old double space no longer widens anything. The pill's
-            own padding supplies the breathing room next to it. */}
-        <Chars text="we do " />
-        <span className="big-word">
-          <Chars text="launch" />
+        <span className="hero-line-1">
+          {/* Single space: runs of whitespace render as one collapsible gap,
+              so the old double space no longer widens anything. The box's own
+              padding supplies the breathing room next to it. */}
+          <Chars text="Launch " />
+          <span className="big-word">
+            <Chars text="films" />
+          </span>
         </span>
-        <Chars text=" videos & founder videos" />
+        <span className="hero-line-2">
+          <Chars text="& founder videos" />
+        </span>
       </div>
 
       <div id="text-2" className="hero-line">

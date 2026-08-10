@@ -592,22 +592,61 @@ html.lenis body {
   opacity: 0;
 }
 
-/* Line 1 — right of the rocket, at roughly its altitude. */
+/* Line 1 — right of the rocket, at roughly its altitude.
+
+   Its own family and metrics, not the shared .hero-line ones: Archivo Black
+   is a static cut, so the `wdth` axis the variable Archivo is loaded for does
+   nothing here and the 700 weight is meaningless — the file is a single 400.
+   Set to `normal` explicitly so neither is inherited and silently ignored. */
 #text-1 {
   right: 7vw;
   top: 22%;
-  /* Narrow enough to wrap into a block that clears the rocket entirely. */
-  max-width: 13ch;
+  font-family: var(--font-hero-black), system-ui, sans-serif;
+  font-weight: 400;
+  font-variation-settings: normal;
+  /* Not the 0.92 of the reference. That figure assumes plain text, where a
+     line box shorter than the glyphs is free — nothing is painted in the
+     overlap. Here the boxed word paints a background across its full content
+     box, which for Archivo Black is ~1.05em tall, so at 0.92 the box was
+     drawn over the descenders of the line above and the caps of the line
+     below. The leading has to clear the box, not just the letters. */
+  line-height: 1.16;
+  letter-spacing: -0.02em;
+  /* Two explicit lines now, so this only guards against a single line
+     overrunning — it is not what breaks the copy. */
+  max-width: 15ch;
   text-align: right;
+}
+#text-1 .hero-line-1 {
+  display: block;
+  font-size: clamp(42px, 7vw, 92px);
+}
+/* The turn-down line: smaller, and dropped to a grey so it sits behind the
+   statement above it rather than competing with it. */
+#text-1 .hero-line-2 {
+  display: block;
+  /* In em, so the gap under the box holds its proportion as the clamped
+     sizes move. A fixed 4px vanished at 92px type. */
+  margin-top: 0.12em;
+  font-size: clamp(30px, 4.9vw, 64px);
+  color: #c9c7c0;
 }
 
 /* Line 2 — on the lower band, nudged right of centre. */
+/* Same cut as line 1 — weight and `wdth` reset for the same reason: the file
+   is a single static 400, so the inherited 700 and width axis do nothing.
+   Leading matches line 1 too, because this line also carries a word with a
+   painted background box that would otherwise overlap the row below it. */
 #text-2 {
   left: 55%;
   transform: translateX(-60%);
   bottom: 10%;
   max-width: 30ch;
   text-align: center;
+  font-family: var(--font-hero-black), system-ui, sans-serif;
+  font-weight: 400;
+  font-variation-settings: normal;
+  line-height: 1.16;
 }
 
 /* Line 1 resolves character by character out of blur. */
@@ -663,6 +702,17 @@ html.lenis body {
     color 0.4s ease,
     transform 0.6s var(--ease-out-expo);
 }
+/* Line 1's boxed word. Tighter horizontally and flush vertically, so the box
+   reads as a block set into the line rather than a pill floating in it.
+   box-decoration-break: clone so that if it ever wraps, both fragments get
+   their own padding and rounded edges instead of one box split down the
+   middle. */
+#text-1 .big-word {
+  padding: 0 0.12em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
 .big-word:hover,
 .regular-word:hover {
   background-position: 100% 0;
@@ -712,24 +762,27 @@ html.lenis body {
      rocket at ~55% of the viewport width and leaves the right ~45% clear.
      Sat up by the nose of the rocket, tight to the top. */
   #text-1 {
-    font-size: clamp(1.5rem, 4.2vw, 1.35rem);
     right: 5vw;
     top: 10%;
-    /* ~8 characters is the widest run that still clears the exhaust plume:
-       it breaks the copy to "WE DO / LAUNCH / & PRODUCT / VIDEOS". */
-    max-width: 8ch;
+    /* The band right of the rocket is only ~45% of a phone's width, so the
+       desktop 15ch would run the copy into the exhaust plume. At 9ch
+       "LAUNCH FILMS" breaks after LAUNCH, which is the same shape as the
+       desktop composition, one line deeper. */
+    max-width: 9ch;
     text-align: right;
-    /* The desktop 112 width axis eats horizontal room that the narrow band
-       does not have; back to normal width. */
-    font-variation-settings: "wdth" 100;
     /* Less sky to hide in on this crop, so the copy carries its own
        contrast instead of relying on the photo behind it. */
     text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
   }
 
-  /* The pill padding stays proportionally chunky at this size. */
-  #text-1 .big-word {
-    padding: 0.02em 0.14em;
+  /* The desktop clamps bottom out at 42/30px, which is sized for a full-width
+     line — far too heavy for a 45%-wide band. Same ratio between the two
+     lines, scaled to what the column can hold. */
+  #text-1 .hero-line-1 {
+    font-size: clamp(26px, 7.5vw, 44px);
+  }
+  #text-1 .hero-line-2 {
+    font-size: clamp(18px, 5.2vw, 30px);
   }
 }
 
@@ -1374,6 +1427,34 @@ html.lenis body {
   font-size: clamp(9px, 0.68vw, 13px);
   letter-spacing: 0.3em;
   opacity: 0.85;
+}
+
+/* Top-right batch stamp. Same pill as the client-logo row so the two places
+   a batch appears on the site read as the same object, sized off the index
+   stamp it sits opposite. */
+.film-batch {
+  flex: 0 0 auto;
+  padding: 5px 12px 4px;
+  /* No fill — the chip sits directly on the still. Legibility on a bright
+     frame comes from the shadow below, not a plate behind it. */
+  border: 1px solid rgba(250, 247, 239, 0.45);
+  border-radius: 999px;
+  font-family: var(--font-card-serif);
+  font-size: clamp(12px, 0.95vw, 17px);
+  /* P22 Parrish ships a single 400, so this is a synthesised bold — the
+     browser smears the strokes rather than swapping to a drawn weight. It
+     holds up at this size and nowhere near text-length runs; if it ever looks
+     mushy, the fix is a real bold cut, not a higher number. */
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  /* Full strength. The chip was at 0.85 to sit back like the index stamp
+     opposite it, but that stamp has the card's scrim under it and this sits
+     in the open corner. */
+  opacity: 1;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.75);
 }
 
 /* Top-right results — the numbers are the proof, so they get display type

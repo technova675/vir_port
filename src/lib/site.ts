@@ -17,6 +17,9 @@ export const FILM_CARDS = PORTFOLIO_ITEMS.map((item, i) => ({
   video: item.video,
   title: item.client,
   eyebrow: item.category,
+  /** Accelerator batch the client was in, e.g. "YC S26". Stamped top-right
+      on the card, opposite the index. */
+  batch: item.batch,
   /** Live post the film shipped in — the proof, not a dead internal route. */
   exploreHref: item.url,
 }));
