@@ -1818,7 +1818,11 @@ html.lenis body {
 .client-logos-section {
   position: relative;
   z-index: 10;
-  height: 450vh;
+  /* 100vh, not 450vh. The list used to be scrubbed by scroll position, and
+     those 4.5 viewports were the scroll distance that drove it. It now
+     animates on its own timer, so that height would just be four screens of
+     scrolling with nothing responding to it. */
+  height: 100vh;
   background: #000;
 }
 .client-logos-sticky {
@@ -1899,6 +1903,12 @@ html.lenis body {
   position: relative;
   display: flex;
   flex-direction: column;
+  /* Continuous vertical loop, the counterpart to the mobile marquee. Rows are
+     a fixed height with no gap, so the list is exactly two copies tall and
+     -50% lands precisely on the start of the second copy. `top` (set inline,
+     from the same constants that size the rows) centres a row in the window.
+     A transform animation, so it runs on the compositor. */
+  animation: client-logos-scroll-y 28s linear infinite;
   /* start, not end. Right-aligning gave every row a ragged LEFT edge, so no
      two marks began at the same x — Agnost AI started well left of Click.
      Aligning from the left puts every mark on one vertical line, which is
@@ -2194,6 +2204,22 @@ html.lenis body {
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+@keyframes client-logos-scroll-y {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+/* Desktop list only — the mobile block has its own reduced-motion rule. */
+@media (prefers-reduced-motion: reduce) {
+  .client-logos-list {
+    animation: none;
   }
 }
 

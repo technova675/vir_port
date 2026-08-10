@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { CLIENT_LOGOS } from "@/lib/site";
@@ -10,136 +10,171 @@ gsap.registerPlugin(ScrollTrigger);
 const ITEM_HEIGHT = 150;
 const WINDOW_SLOTS = 3;
 
-export default function ClientLogos() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
-  const marqueeRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const activeIndexRef = useRef(0);
+/**
+ * Both layouts loop continuously under a CSS animation, so "which logo is
+ * centred" cannot be derived from scroll position — it has to be measured per
+ * frame. Desktop travels vertically, mobile horizontally; that axis is the
+ * only difference, so they share this.
+ *
+ * Two things here are not obvious and both fix real bugs:
+ *
+ *  - The highlight is applied by LOGO INDEX to both copies of that logo, not
+ *    to the single nearest element. Each track renders CLIENT_LOGOS twice for
+ *    the seamless loop, so at the wrap the element under the centre changes
+ *    from clone to original. Highlighting one element meant the class had to
+ *    hand off between nodes, and the receiving node re-ran its colour
+ *    transition from the inactive state — a visible flash on the first logo.
+ *
+ *  - The switch needs a dead zone. Two logos are routinely near-equidistant
+ *    from the centre, and without a threshold the winner flips back and forth
+ *    on the smallest jitter.
+ */
+function createCenterTracker(opts: {
+  /** Clipping viewport. Supplies the centre AND scopes the item query. */
+  viewport: HTMLElement;
+  itemSelector: string;
+  axis: "x" | "y";
+  activeClass: string;
+}) {
+  const { viewport, itemSelector, axis, activeClass } = opts;
+  const HYSTERESIS = 14;
 
-  // Mobile only: the marquee scrolls continuously via CSS, so "which logo
-  // is centered" can't be derived from scroll position the way the desktop
-  // stepper does it — it has to be measured per frame. The loop is gated
-  // behind both a max-width query and an IntersectionObserver, so it never
-  // runs on desktop and never runs while the section is off-screen.
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 900px)");
-    const marquee = marqueeRef.current;
-    const section = sectionRef.current;
-    if (!marquee || !section) return;
+  let frame = 0;
+  let activeLogo = -1;
 
-    let frame = 0;
-    // The index into CLIENT_LOGOS that is currently highlighted — NOT a
-    // specific element. See applyActive for why that distinction matters.
-    let activeLogo = -1;
+  const items = () => viewport.querySelectorAll<HTMLElement>(itemSelector);
 
-    /**
-     * Minimum improvement, in px, before the highlight moves to another logo.
-     *
-     * Without it, two logos sitting almost equidistant from the centre swap
-     * the highlight on the slightest jitter — and they routinely are almost
-     * equidistant (Context.dev measured ~165px out, Tsenta ~160px). Any nudge
-     * flipped it and flipped it back, which read as a flicker.
-     */
-    const HYSTERESIS = 14;
+  const apply = (list: NodeListOf<HTMLElement>, logo: number) => {
+    list.forEach((item, i) => {
+      item.classList.toggle(activeClass, i % CLIENT_LOGOS.length === logo);
+    });
+    activeLogo = logo;
+  };
 
-    /**
-     * Applies the highlight to BOTH copies of the chosen logo.
-     *
-     * The track renders CLIENT_LOGOS twice for the seamless loop, so every
-     * logo exists as two separate elements. Highlighting only the one nearest
-     * the centre meant that at the wrap — when the clone hands its screen
-     * position to the original — the class had to move between two nodes. The
-     * receiving node had never been active, so it re-ran the 0.35s colour
-     * transition from the inactive white: the same logo visibly dropped out of
-     * its fill colour and faded back in. Marking the pair means the incoming
-     * node is already in the right state and nothing animates.
-     *
-     * The twin is eight slots away, so it is never on screen at the same time.
-     */
-    const applyActive = (items: NodeListOf<HTMLElement>, logo: number) => {
-      items.forEach((item, i) => {
-        item.classList.toggle("is-centered", i % CLIENT_LOGOS.length === logo);
+  const centreOf = (r: DOMRect) =>
+    axis === "x" ? r.left + r.width / 2 : r.top + r.height / 2;
+
+  const measure = () => {
+    const list = items();
+    if (list.length) {
+      const centre = centreOf(viewport.getBoundingClientRect());
+
+      // Distance per LOGO, taking whichever of its copies is closer.
+      const dist = new Array<number>(CLIENT_LOGOS.length).fill(Infinity);
+      list.forEach((item, i) => {
+        const d = Math.abs(centreOf(item.getBoundingClientRect()) - centre);
+        const logo = i % CLIENT_LOGOS.length;
+        if (d < dist[logo]) dist[logo] = d;
       });
-      activeLogo = logo;
-    };
 
-    const measure = () => {
-      const box = marquee.getBoundingClientRect();
-      const centerX = box.left + box.width / 2;
-      const items =
-        marquee.querySelectorAll<HTMLElement>(".client-logos-marquee-img");
-
-      if (items.length) {
-        // Distance per LOGO, taking whichever of its two copies is closer.
-        const dist = new Array<number>(CLIENT_LOGOS.length).fill(Infinity);
-        items.forEach((item, i) => {
-          const r = item.getBoundingClientRect();
-          const d = Math.abs(r.left + r.width / 2 - centerX);
-          const logo = i % CLIENT_LOGOS.length;
-          if (d < dist[logo]) dist[logo] = d;
-        });
-
-        let best = 0;
-        for (let k = 1; k < dist.length; k++) {
-          if (dist[k] < dist[best]) best = k;
-        }
-
-        if (activeLogo === -1) {
-          applyActive(items, best);
-        } else if (
-          best !== activeLogo &&
-          dist[best] < dist[activeLogo] - HYSTERESIS
-        ) {
-          applyActive(items, best);
-        }
+      let best = 0;
+      for (let k = 1; k < dist.length; k++) {
+        if (dist[k] < dist[best]) best = k;
       }
 
-      frame = requestAnimationFrame(measure);
-    };
+      if (
+        activeLogo === -1 ||
+        (best !== activeLogo && dist[best] < dist[activeLogo] - HYSTERESIS)
+      ) {
+        apply(list, best);
+      }
+    }
+    frame = requestAnimationFrame(measure);
+  };
 
-    const stop = () => {
+  return {
+    start() {
+      if (!frame) frame = requestAnimationFrame(measure);
+    },
+    stop() {
       if (frame) cancelAnimationFrame(frame);
       frame = 0;
-      marquee
-        .querySelectorAll<HTMLElement>(".client-logos-marquee-img")
-        .forEach((item) => item.classList.remove("is-centered"));
+      items().forEach((item) => item.classList.remove(activeClass));
       activeLogo = -1;
-    };
+    },
+  };
+}
 
-    const start = () => {
-      if (!frame) frame = requestAnimationFrame(measure);
-    };
+/**
+ * Runs a tracker only while its media query matches and the section is on
+ * screen. Shared so the two layouts cannot drift apart in their teardown.
+ */
+function useCenterTracker(
+  sectionRef: React.RefObject<HTMLDivElement | null>,
+  viewportRef: React.RefObject<HTMLDivElement | null>,
+  query: string,
+  axis: "x" | "y",
+  itemSelector: string,
+  activeClass: string,
+) {
+  useEffect(() => {
+    const section = sectionRef.current;
+    const viewport = viewportRef.current;
+    if (!section || !viewport) return;
+
+    const mq = window.matchMedia(query);
+    const tracker = createCenterTracker({
+      viewport,
+      itemSelector,
+      axis,
+      activeClass,
+    });
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && mq.matches) start();
-        else stop();
+        if (entry.isIntersecting && mq.matches) tracker.start();
+        else tracker.stop();
       },
       { threshold: 0 },
     );
     observer.observe(section);
 
-    // Resizing across the breakpoint must tear the loop down, otherwise it
-    // keeps measuring a display:none marquee on desktop.
+    // Crossing the breakpoint must tear the loop down, otherwise it keeps
+    // measuring a display:none element on the other layout.
     const onChange = () => {
-      if (!mq.matches) stop();
+      if (!mq.matches) tracker.stop();
     };
     mq.addEventListener("change", onChange);
 
     return () => {
       observer.disconnect();
       mq.removeEventListener("change", onChange);
-      stop();
+      tracker.stop();
     };
-  }, []);
+  }, [sectionRef, viewportRef, query, axis, itemSelector, activeClass]);
+}
 
+export default function ClientLogos() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
+  const windowRef = useRef<HTMLDivElement>(null);
+  const marqueeRef = useRef<HTMLDivElement>(null);
+
+  // Desktop: the list loops vertically through the clipped window.
+  useCenterTracker(
+    sectionRef,
+    windowRef,
+    "(min-width: 901px)",
+    "y",
+    ".client-logo",
+    "active",
+  );
+  // Mobile: horizontal marquee. Behaviour unchanged.
+  useCenterTracker(
+    sectionRef,
+    marqueeRef,
+    "(max-width: 900px)",
+    "x",
+    ".client-logos-marquee-img",
+    "is-centered",
+  );
+
+  // The heading still reveals on scroll — only the logo list was moved off
+  // scroll position onto its own timer.
   useEffect(() => {
     const section = sectionRef.current;
     const heading = headingRef.current;
-    const list = listRef.current;
-    if (!section || !heading || !list) return;
+    if (!section || !heading) return;
 
     const ctx = gsap.context(() => {
       const words = heading.querySelectorAll("[data-word]");
@@ -154,32 +189,6 @@ export default function ClientLogos() {
           trigger: section,
           start: "top 70%",
           toggleActions: "play none none reverse",
-        },
-      });
-
-      const windowHeight = ITEM_HEIGHT * WINDOW_SLOTS;
-      const centerOffset = windowHeight / 2 - ITEM_HEIGHT / 2;
-      const lastIndex = CLIENT_LOGOS.length - 1;
-
-      // The logo list continuously slides upward through a small clipped
-      // window as you scroll — the item centered in that window (not a
-      // discrete "current" item) is the active/recolored one.
-      gsap.set(list, { y: centerOffset });
-
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: true,
-        onUpdate: (self) => {
-          const y = centerOffset - self.progress * lastIndex * ITEM_HEIGHT;
-          gsap.set(list, { y });
-
-          const idx = Math.round(self.progress * lastIndex);
-          if (idx !== activeIndexRef.current) {
-            activeIndexRef.current = idx;
-            setActiveIndex(idx);
-          }
         },
       });
     }, section);
@@ -208,20 +217,33 @@ export default function ClientLogos() {
 
         <div
           className="client-logos-window"
+          ref={windowRef}
           style={{ height: ITEM_HEIGHT * WINDOW_SLOTS }}
         >
-          <div className="client-logos-list" ref={listRef}>
-            {CLIENT_LOGOS.map((logo, i) => (
+          {/* Duplicated for the seamless vertical loop, exactly like the
+              mobile marquee. Rows are a fixed ITEM_HEIGHT with no gap between
+              them, so half the list is precisely one copy and
+              translateY(-50%) wraps with no seam — the half-gap error that
+              had to be worked around on the horizontal track cannot occur
+              here. `top` offsets the list so a row sits centred in the
+              window rather than flush with its top edge. */}
+          <div
+            className="client-logos-list"
+            style={{ top: (ITEM_HEIGHT * (WINDOW_SLOTS - 1)) / 2 }}
+          >
+            {[...CLIENT_LOGOS, ...CLIENT_LOGOS].map((logo, i) => (
               <div
                 // is-wordmark marks the assets that are not yet icon-only.
                 // A wordmark cannot go in the square icon box — at 6.3:1 it
                 // would render a few pixels tall — so it keeps the cap-height
                 // treatment until an icon-only SVG replaces it.
-                className={`client-logo${i === activeIndex ? " active" : ""}${
-                  logo.nameInLogo ? " is-wordmark" : ""
-                }`}
+                //
+                // No `active` here: the tracker applies it per frame to both
+                // copies of whichever logo is centred.
+                className={`client-logo${logo.nameInLogo ? " is-wordmark" : ""}`}
                 style={{ height: ITEM_HEIGHT }}
-                key={logo.key}
+                aria-hidden={i >= CLIENT_LOGOS.length ? true : undefined}
+                key={`${logo.key}-${i}`}
               >
                 {/* The mark sits in a fixed-size cell rather than being
                     allowed to size itself, so every logo occupies the same
