@@ -482,6 +482,14 @@ html.lenis body {
   z-index: 1;
 }
 
+/* No bottom scrim on the stage. One was added to soften the hero's hard clip
+   edge into the black section below, but it darkened the foot of the frame
+   for the whole time the hero is on screen — including at the top of the
+   page, where the crop is open sky and there is nothing to hide. Removed on
+   request. The trade is that the clip edge is a hard cut again; the fix for
+   that, if it is wanted back, is a scrim whose opacity is driven by the pan's
+   progress so it is absent at the start and only arrives at the handoff. */
+
 /* Desktop: 60vh taller than the viewport — that overflow is the travel the
    scroll-driven pan works with. */
 .hero-pan {

@@ -17,9 +17,17 @@ function Chars({ text }: { text: string }) {
     <>
       {text.split(/(\s+)/).map((tok, i) =>
         /^\s+$/.test(tok) ? (
-          <span key={i} className="hero-char">
-            {tok}
-          </span>
+          // Gaps are a plain text node, NOT a .hero-char span. As a span they
+          // inherited `display: inline-block; white-space: pre`, which makes
+          // each space a rigid box that cannot collapse at a line break — so
+          // in the narrow mobile column a space could wrap onto a line of its
+          // own and leave a blank line mid-headline. A text node breaks and
+          // collapses the way normal whitespace does.
+          //
+          // Nothing is lost by not animating them: a space has nothing to
+          // reveal, and dropping them from the stagger only means the
+          // per-character delay counts real characters.
+          <Fragment key={i}> </Fragment>
         ) : (
           <span key={i} className="hero-char-word">
             {[...tok].map((c, j) => (
@@ -203,11 +211,14 @@ export default function HeroText({
   return (
     <div ref={overlayRef} className="content-overlay">
       <div id="text-1" className="hero-line">
-        <Chars text="we do  " />
+        {/* Single space: runs of whitespace now render as one collapsible
+            gap, so the old double space no longer widens anything. The pill's
+            own padding supplies the breathing room next to it. */}
+        <Chars text="we do " />
         <span className="big-word">
           <Chars text="launch" />
         </span>
-        <Chars text="& founder videos" />
+        <Chars text=" videos & founder videos" />
       </div>
 
       <div id="text-2" className="hero-line">
