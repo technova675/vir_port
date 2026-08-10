@@ -486,6 +486,16 @@ html.lenis body {
    scroll-driven pan works with. */
 .hero-pan {
   height: 160vh;
+
+  /* A 24px-wide blurred copy of the frame, inlined as base64 (~106 bytes, so
+     it costs no request and paints with the stylesheet). Without it the stage
+     is a black rectangle until the full crop decodes; with it the composition
+     is readable immediately and the real image resolves in over the top.
+     Lives in CSS, not an inline style, so the mobile query below can swap it
+     for the portrait crop — an inline style would win over both. */
+  background-image: url("data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAACQAwCdASoYAA4ALrV2u12jqampiYC0S1AE6ZQYwAQbjWpEiDaMAP5glYp0I0jUQZrL4/1EA9Q9QJH1GXc0lM7kgn+kP7Q84BNm6jWwPvm5uoI7u6AAAA==");
+  background-size: cover;
+  background-position: center;
 }
 .hero-img {
   width: 100%;
@@ -512,6 +522,10 @@ html.lenis body {
     /* svh, not vh: vh is the *largest* viewport height on mobile, so the
        travel would be mismeasured while the browser chrome is showing. */
     height: 148svh;
+
+    /* Portrait crop's placeholder — the landscape one would show the wrong
+       composition behind the portrait image. */
+    background-image: url("data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAABwBQCdASoYACsAPu1gqVCppKOisBVaqTAdiUAU6PvoygSSLL7B0WvtZaB+mL92sr2deNwAAPyZnShp3MsQly3aqcCap7OaUUeh0a0Z33144OAmvCdD0T31/x89RFGQhKIZmS9lOZ+Te98yK5jkwKIfm7Eu+irQY7aAm/WHBck29Rrt+PNOnokRakAAAA==");
   }
 
   /* The stage takes its height from Tailwind's h-screen (100vh), and on
@@ -596,7 +610,12 @@ html.lenis body {
 .hero-char {
   display: inline-block;
   white-space: pre;
-  will-change: transform, filter, opacity;
+  /* No will-change here. There are ~30 of these, the intro plays once on
+     load, and a standing `will-change: filter` holds a separate compositing
+     layer per character for the life of the page — inside the pinned stage,
+     which is composited on every scrolled frame. HeroText sets will-change
+     for the duration of the tween and clears it on completion, which is what
+     the property is actually for. */
 }
 
 /* Line 2 wipes up from behind its own edge, word by word. */
@@ -1500,6 +1519,17 @@ html.lenis body {
   --pp-accent: rgba(250, 247, 239, 0.6);
 
   position: relative;
+  /* `position: relative` alone does NOT create a stacking context, so the
+     mix-blend-mode grain in ::after below resolved its backdrop against the
+     document root. That forced Chrome to composite the whole page — measured
+     as two 1920x15597 layers, ~114MB each — and re-raster tiles of it while
+     scrolling, which stuttered every section including the hero.
+
+     isolation: isolate makes this element the blending root, so the grain
+     composites against the portfolio section only. Verified with
+     LayerTree: total layer memory 444MB -> 116MB, and the document-sized
+     layers are gone. */
+  isolation: isolate;
   background: var(--pp-bg);
   color: var(--pp-fg);
   /* Reuses the project's existing font tokens (see :root) rather than
@@ -1515,7 +1545,17 @@ html.lenis body {
 }
 
 /* Static film grain. Same feTurbulence data-URI the VHS layer uses, at a
-   larger tile and much lower opacity — no repaint cost, no shader work.
+   larger tile and much lower opacity.
+
+   It is NOT free, contrary to what this comment used to claim: mix-blend-mode
+   is shader work, and it needs a rasterised backdrop to blend against. What
+   keeps the cost bounded is `isolation: isolate` on the parent, which confines
+   that backdrop to this section instead of the whole document.
+
+   It stays `absolute`, not `fixed`: nothing here establishes a containing
+   block for a fixed element, so fixed would paint grain across the viewport
+   at all times — over the hero included.
+
    z-index clears .portfolio-list (z-index: 10). */
 .portfolio-premium::after {
   content: "";
@@ -1859,38 +1899,65 @@ html.lenis body {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  /* start, not end. Right-aligning gave every row a ragged LEFT edge, so no
+     two marks began at the same x — Agnost AI started well left of Click.
+     Aligning from the left puts every mark on one vertical line, which is
+     the edge the eye actually reads down. */
+  align-items: flex-start;
+
+  /* The reference lockup is [small square icon] + [name], with every icon the
+     same square and every name the same size. That only works with icon-only
+     artwork, so it is the treatment for assets that have it. */
+  --cl-mark-size: clamp(34px, 2.6vw, 44px);
+  /* Fallback for assets that are still wordmarks (.is-wordmark). They cannot
+     go in the square — Agnost AI is 6.3:1, so `contain` would render it about
+     seven pixels tall — so they keep a cap height and their own width until
+     an icon-only SVG replaces them. */
+  --cl-mark-h: clamp(30px, 2.4vw, 40px);
+  --cl-mark-max-w: 170px;
 }
+/* mark - name - batch, packed left and tight to each other.
+   Left-packed so every row shares a left edge (see .client-logos-list), and
+   flowed rather than spread so the batch chip sits beside its name instead of
+   being thrown to the far right of the column. */
 .client-logo {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
+  justify-content: flex-start;
+  gap: 14px;
   width: 100%;
 }
-/* Every logo gets the same cap height and keeps its own aspect ratio —
-   the sizer <img> inside supplies the width. Wide wordmarks and square
-   icons therefore read as one set instead of being forced into a box. */
+/* Icon assets: a fixed SQUARE, identical for every logo. This is the whole
+   point of the reference lockup — same icon box, same text size, every row. */
 .client-logo-icon {
   position: relative;
   display: block;
   flex: 0 0 auto;
-  height: clamp(36px, 3vw, 56px);
-  /* Ultra-wide wordmarks would otherwise push the row past the window's
-     clip edge. Capping the width makes mask-size:contain scale them down
-     instead of cropping them. */
-  max-width: 240px;
+  width: var(--cl-mark-size);
+  height: var(--cl-mark-size);
+}
+/* Wordmark assets: cap height, own width. Temporary — see --cl-mark-h. */
+.client-logo.is-wordmark .client-logo-icon {
+  width: auto;
+  max-width: var(--cl-mark-max-w);
+  height: var(--cl-mark-h);
 }
 .client-logo-sizer {
+  /* Only ever a size reference for the mask; never painted. Square icons take
+     their size from the box above, so the sizer only has to supply a width
+     for the wordmark case. */
   display: block;
   height: 100%;
-  width: auto;
-  max-width: 100%;
+  width: 100%;
   object-fit: contain;
   visibility: hidden;
 }
-.client-logo-text {
+.client-logo.is-wordmark .client-logo-sizer {
+  width: auto;
+  max-width: 100%;
+}
+.client-logo-name {
   flex: 0 0 auto;
   font-size: clamp(20px, 1.8vw, 30px);
   font-weight: 600;
@@ -1899,8 +1966,34 @@ html.lenis body {
   color: rgba(255, 255, 255, 0.7);
   transition: color 0.3s ease-out;
 }
-.client-logo.active .client-logo-text {
+.client-logo.active .client-logo-name {
   color: var(--color-brand-pink);
+}
+/* The batch reads as metadata, not as part of the company name — smaller,
+   quieter, and in its own chip. It is a separate element rather than text
+   appended to the name, which is what used to make rows different lengths;
+   that stays true whether it sits beside the name or far from it. */
+.client-logo-batch {
+  flex: 0 0 auto;
+  /* Sits just after the name. It was previously pushed to the column's right
+     edge by a 1fr name track, which left a wide empty gap mid-row. */
+  margin-left: 4px;
+  padding: 4px 10px 3px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  font-size: clamp(10px, 0.72vw, 12px);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.55);
+  transition:
+    color 0.3s ease-out,
+    border-color 0.3s ease-out;
+}
+.client-logo.active .client-logo-batch {
+  color: var(--color-brand-pink);
+  border-color: var(--color-brand-pink);
 }
 /* Rendered as a mask instead of <img> so it can be recolored solid
    flat (gray dim / pink active) with no bleed, matching the reference —
@@ -1910,11 +2003,17 @@ html.lenis body {
   inset: 0;
   background-color: rgba(255, 255, 255, 0.7);
   mask-repeat: no-repeat;
+  /* Centre is enough now: the cell is sized by the sizer <img> to the mark's
+     own aspect ratio, so there is no spare room inside it to align within. */
   mask-position: center;
   mask-size: contain;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
   -webkit-mask-size: contain;
+  /* Per-asset optical nudge (see ClientLogo.scale). Applied to the mark, not
+     the cell, so the cell stays exactly one grid track wide and the column
+     alignment survives any tweak. */
+  transform: scale(var(--logo-scale, 1));
   transition: background-color 0.3s ease-out;
 }
 .client-logo.active .client-logo-mark {
@@ -1952,29 +2051,67 @@ html.lenis body {
   .client-logos-marquee-track {
     display: flex;
     align-items: center;
-    gap: 26px;
+    /* NO `gap` here — the spacing is a margin on each item instead. This is
+       not a style preference, it is what makes the loop seamless.
+
+       With `gap`, N items have N-1 gaps, so for the 8+8 duplicated track:
+         total     = 2S + 15g          (S = the eight item widths)
+         -50%      = S + 7.5g
+         seamless  = S + 8g            (first item of copy A -> copy B)
+       translateX(-50%) therefore landed half a gap — 13px — short, and the
+       strip skipped sideways on every wrap. As a per-item margin each item
+       carries its own trailing space, so total = 2(S + 8g) and -50% is
+       exactly one copy. */
     width: max-content;
     animation: client-logos-scroll 24s linear infinite;
   }
   /* Masked, not <img> — same technique as the desktop .client-logo-mark,
      so the logo recolours (dim grey -> brand pink) instead of revealing
      its own artwork, which is black and vanished against the section. */
+  /* Same fix as the desktop grid, in the axis that matters here. The marquee
+     is a horizontal strip, so "uniform" means each item occupies an identical
+     slot — otherwise a long name stretches its item and the logo spacing
+     visibly pulses as the track scrolls. */
   .client-logos-marquee-img {
+    /* Same square-icon lockup as desktop, scaled for the strip. */
+    --cl-m-mark-size: 26px;
+    /* Wordmark fallback, as on desktop. */
+    --cl-m-mark-h: 22px;
+    --cl-m-mark-max-w: 96px;
+
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
+    /* Width is the CONTENT's, not a fixed slot. A fixed 212px slot padded
+       every short name out to the width of the longest one, so a 360px phone
+       could only ever show one logo at a time. Letting each item be its own
+       width, with one constant gap between them, roughly doubles how many are
+       on screen — and with square icons the only variance left is the name,
+       which is exactly the variance the reference strip has too. */
     flex: 0 0 auto;
-    height: 32px;
+    height: 40px;
+    /* The track's spacing lives here, not as `gap` on the track — see the
+       seamless-loop note above. Changing this number is still the way to tune
+       the strip's density; it stays correct because every item carries one. */
+    margin-right: 26px;
     transform: scale(0.92);
     transition: transform 0.35s ease-out;
   }
   .client-logos-marquee-icon {
     position: relative;
     display: block;
-    height: 100%;
+    flex: 0 0 auto;
+    width: var(--cl-m-mark-size);
+    height: var(--cl-m-mark-size);
+  }
+  .client-logos-marquee-img.is-wordmark .client-logos-marquee-icon {
+    width: auto;
+    max-width: var(--cl-m-mark-max-w);
+    height: var(--cl-m-mark-h);
   }
   .client-logos-marquee-text {
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 600;
     letter-spacing: -0.01em;
     white-space: nowrap;
@@ -1984,23 +2121,52 @@ html.lenis body {
   .client-logos-marquee-img.is-centered .client-logos-marquee-text {
     color: var(--color-brand-pink);
   }
+  /* Chip, like desktop, but tuned down — at 250px a slot there is no room for
+     a full-size pill next to the mark and the name. */
+  .client-logos-marquee-batch {
+    flex: 0 0 auto;
+    padding: 3px 7px 2px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.55);
+    transition:
+      color 0.35s ease-out,
+      border-color 0.35s ease-out;
+  }
+  .client-logos-marquee-img.is-centered .client-logos-marquee-batch {
+    color: var(--color-brand-pink);
+    border-color: var(--color-brand-pink);
+  }
   .client-logos-marquee-sizer {
     display: block;
     height: 100%;
-    width: auto;
+    width: 100%;
     object-fit: contain;
     visibility: hidden;
+  }
+  .client-logos-marquee-img.is-wordmark .client-logos-marquee-sizer {
+    width: auto;
+    max-width: 100%;
   }
   .client-logos-marquee-mark {
     position: absolute;
     inset: 0;
     background-color: rgba(255, 255, 255, 0.7);
     mask-repeat: no-repeat;
-    mask-position: center;
+    /* Trailing edge, same reasoning as desktop. */
+    mask-position: right center;
     mask-size: contain;
     -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center;
+    -webkit-mask-position: right center;
     -webkit-mask-size: contain;
+    /* Same per-asset nudge as desktop, so a logo tuned once is tuned in
+       both layouts. */
+    transform: scale(var(--logo-scale, 1));
     transition: background-color 0.35s ease-out;
   }
   /* Applied per-frame by ClientLogos to whichever logo is crossing the

@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef, Fragment } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { scrubFor } from "@/lib/hero-scroll";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -49,7 +50,18 @@ function MaskedWords({ text }: { text: string }) {
   );
 }
 
-export default function HeroText({ scrollLength }: { scrollLength: string }) {
+/**
+ * `scrollLength` is a ScrollTrigger `end` value, and it is a function rather
+ * than a string because on touch the hero's pin length is derived from the
+ * laid-out image (see panEnd). It must be the SAME value the pan uses — the
+ * line-2 reveal is cued to fractions of the scroll range, so a different end
+ * here would time the reveal against a range the image is not using.
+ */
+export default function HeroText({
+  scrollLength,
+}: {
+  scrollLength: string | (() => string);
+}) {
   const overlayRef = useRef<HTMLDivElement>(null);
 
   // Line 1 plays once, on load — it is not tied to scroll position, so it
@@ -74,7 +86,15 @@ export default function HeroText({ scrollLength }: { scrollLength: string }) {
       }
 
       gsap
-        .timeline({ delay: 0.35 })
+        .timeline({
+          delay: 0.35,
+          // Promote for the tween only, then hand the layers back. Left
+          // standing in CSS this was ~30 permanent compositing layers sitting
+          // inside the pinned stage, taxing every scrolled frame to accelerate
+          // an animation that is already over.
+          onComplete: () =>
+            gsap.set("#text-1 .hero-char", { willChange: "auto" }),
+        })
         .set("#text-1", { opacity: 1 })
         .fromTo(
           "#text-1 .hero-char",
@@ -86,6 +106,7 @@ export default function HeroText({ scrollLength }: { scrollLength: string }) {
             duration: 0.9,
             ease: "power2.out",
             stagger: 0.018,
+            willChange: "transform, filter, opacity",
           },
         );
     }, overlay);
@@ -125,7 +146,7 @@ export default function HeroText({ scrollLength }: { scrollLength: string }) {
             trigger: stage,
             start: "top top",
             end: scrollLength,
-            scrub: 1,
+            scrub: scrubFor(),
           },
         });
 

@@ -21,17 +21,54 @@ export const FILM_CARDS = PORTFOLIO_ITEMS.map((item, i) => ({
   exploreHref: item.url,
 }));
 
+export type ClientLogo = {
+  key: string;
+  /** SVG in public/logos. Rendered as a CSS mask so it can be recoloured. */
+  src: string;
+  /**
+   * Company name. Always set, because it is the accessible label whether or
+   * not it is shown — when the artwork already spells the name, this is
+   * rendered for screen readers only.
+   */
+  name: string;
+  /**
+   * True when `src` is a wordmark that already contains the company name, so
+   * printing `name` next to it would say it twice.
+   *
+   * This used to be implicit: the old `text` field held "Tsenta YC (S26)" for
+   * icon assets but just "YC (S26)" for wordmark ones, and the rule for which
+   * was which existed only in the author's head. Anyone adding a logo had no
+   * way to know. Now it is stated per entry.
+   *
+   * The target state is icon-only artwork everywhere, at which point this is
+   * false for every entry and every row is [mark] [name] [batch].
+   */
+  nameInLogo?: boolean;
+  /** Accelerator batch. Its own field, and its own chip — never concatenated
+      into the name, which is what made rows different widths. */
+  batch?: string;
+  /**
+   * Optical size nudge, 1 = untouched. A uniform box is not the same as
+   * uniform *apparent* size: every SVG carries different padding inside its
+   * viewBox, so some need a hand tweak to sit right against the others.
+   * There is no automatic rule for this — it is eyeballed once per asset.
+   */
+  scale?: number;
+};
+
 /** Client logo SVGs, served locally from public/logos. */
-export const CLIENT_LOGOS = [
-  { key: "context-dev", src: "/logos/context_dev.svg", text: "Context.dev YC (S26)", alt: "Context.dev" },
-  { key: "agnost-ai", src: "/logos/agnost-ai-horizontal.svg", text: "YC (S26)", alt: "Agnost AI" },
-  { key: "tsenta", src: "/logos/tsenta-black.svg", text: "Tsenta YC (S26)", alt: "Tsenta" },
-  { key: "click", src: "/logos/click.svg", text: "Click YC (S26)", alt: "Click" },
-  { key: "duo", src: "/logos/duo.svg", text: "", alt: "Duo" },
-  { key: "agglayer", src: "/logos/agglayer.svg", text: "", alt: "Agglayer" },
-  { key: "aptos", src: "/logos/aptos.svg", text: "", alt: "Aptos" },
-  { key: "biconomy", src: "/logos/biconomy.svg", text: "", alt: "Biconomy" },
-] as const;
+export const CLIENT_LOGOS: readonly ClientLogo[] = [
+  { key: "context-dev", src: "/logos/context_dev.svg", name: "Context.dev", batch: "YC S26" },
+  { key: "tsenta", src: "/logos/tsenta-black.svg", name: "Tsenta", batch: "YC S26" },
+  { key: "click", src: "/logos/click.svg", name: "Click", batch: "YC S26" },
+  // Wordmark artwork — name is present in the SVG, so it is not printed again.
+  // Flip nameInLogo to false (or drop it) as each icon-only asset lands.
+  { key: "agnost-ai", src: "/logos/agnost-ai-horizontal.svg", name: "Agnost AI", batch: "YC S26", nameInLogo: true },
+  { key: "duo", src: "/logos/duo.svg", name: "Duo", nameInLogo: true },
+  { key: "agglayer", src: "/logos/agglayer.svg", name: "Agglayer", nameInLogo: true },
+  { key: "aptos", src: "/logos/aptos.svg", name: "Aptos", nameInLogo: true },
+  { key: "biconomy", src: "/logos/biconomy.svg", name: "Biconomy", nameInLogo: true },
+];
 
 /** Call-to-action section — image + copy. */
 export const CTA = {
