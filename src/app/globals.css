@@ -621,6 +621,15 @@ html.lenis body {
   display: block;
   font-size: clamp(42px, 7vw, 92px);
 }
+/* "Launch" sits alone on the first wrapped line, and the block is
+   text-align: right — so its right edge lands on the TEXT edge, which is
+   inset from the right edge of the white box below it by that box's padding
+   plus the trailing letter-spacing. A negative right margin pulls the word
+   back out so the two right edges line up. In em, so it holds through the
+   clamped sizes; tune this one value if the alignment drifts. */
+#text-1 .hero-line-1 > .hero-char-word:first-child {
+  margin-right: -0.35em;
+}
 /* The turn-down line: smaller, and dropped to a grey so it sits behind the
    statement above it rather than competing with it. */
 #text-1 .hero-line-2 {
@@ -1907,11 +1916,11 @@ html.lenis body {
 .client-logos-section {
   position: relative;
   z-index: 10;
-  /* 100vh, not 450vh. The list used to be scrubbed by scroll position, and
-     those 4.5 viewports were the scroll distance that drove it. It now
-     animates on its own timer, so that height would just be four screens of
-     scrolling with nothing responding to it. */
-  height: 100vh;
+  /* The scroll distance that drives the list. The sticky child holds the
+     lockup in place while these 4.5 viewports pass, and that travel is what
+     the scrub maps onto the logo column — shorten it and the list steps
+     through its logos faster. */
+  height: 450vh;
   background: #000;
 }
 .client-logos-sticky {
@@ -1966,12 +1975,12 @@ html.lenis body {
   position: relative;
   /* Wide enough for the widest row (a 6:1 wordmark plus its label) —
      the window clips, so anything that overruns is silently cut off. */
-  width: 34vw;
-  min-width: 560px;
+  width: 38vw;
+  min-width: 620px;
   /* Reference keeps this column pulled in from the edge (~60-79vw of a
      1920px viewport), not flush against it — pull it in from the
      space-between's default right-edge position to match. */
-  margin-right: 6vw;
+  margin-right: 1.5vw;
   overflow: hidden;
   -webkit-mask-image: linear-gradient(
     to bottom,
@@ -1992,12 +2001,9 @@ html.lenis body {
   position: relative;
   display: flex;
   flex-direction: column;
-  /* Continuous vertical loop, the counterpart to the mobile marquee. Rows are
-     a fixed height with no gap, so the list is exactly two copies tall and
-     -50% lands precisely on the start of the second copy. `top` (set inline,
-     from the same constants that size the rows) centres a row in the window.
-     A transform animation, so it runs on the compositor. */
-  animation: client-logos-scroll-y 28s linear infinite;
+  /* No animation here: the column's Y is owned by the scroll scrub in
+     ClientLogos, which slides it from the first row to the last as the tall
+     section passes. */
   /* start, not end. Right-aligning gave every row a ragged LEFT edge, so no
      two marks began at the same x — Agnost AI started well left of Click.
      Aligning from the left puts every mark on one vertical line, which is
@@ -2006,14 +2012,18 @@ html.lenis body {
 
   /* The reference lockup is [small square icon] + [name], with every icon the
      same square and every name the same size. That only works with icon-only
-     artwork, so it is the treatment for assets that have it. */
-  --cl-mark-size: clamp(34px, 2.6vw, 44px);
+     artwork, so it is the treatment for assets that have it. Sized off the
+     wordmark cap height so both treatments read at one optical size. */
+  --cl-mark-size: var(--cl-mark-h);
+  /* Sized up to the reference's rhythm: its artwork runs 160px tall in a
+     240px slot. Ours shares the slot with a name and a chip, so the mark
+     takes a little over a third of it rather than two thirds. */
   /* Fallback for assets that are still wordmarks (.is-wordmark). They cannot
      go in the square — Agnost AI is 6.3:1, so `contain` would render it about
      seven pixels tall — so they keep a cap height and their own width until
      an icon-only SVG replaces them. */
-  --cl-mark-h: clamp(30px, 2.4vw, 40px);
-  --cl-mark-max-w: 170px;
+  --cl-mark-h: clamp(38px, 3vw, 50px);
+  --cl-mark-max-w: 230px;
 }
 /* mark - name - batch, packed left and tight to each other.
    Left-packed so every row shares a left edge (see .client-logos-list), and
@@ -2024,8 +2034,26 @@ html.lenis body {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 14px;
+  gap: 18px;
   width: 100%;
+  /* The reference dims every row that is not centred rather than only
+     recolouring it: the column reads as one lit row with the rest sunk into
+     the black. 0.2 is its figure, and it is doing the same job here — the
+     mark, name and chip below are all painted at full strength and this is
+     what holds them back. */
+  opacity: 0.2;
+  /* Fading OUT is the slower, softer half (0.3s ease-out); fading IN is
+     quicker and linear (see .active). Same split as the reference, and it is
+     what stops the handover reading as a crossfade between two lit rows. */
+  transition: opacity 0.3s ease-out;
+  /* The mark sits in the upper part of the slot with the air below it, which
+     is the reference's rhythm — not a row centred in 240px of space. */
+  padding-bottom: 55px;
+}
+.client-logo.active {
+  opacity: 1;
+  transition-duration: 0.2s;
+  transition-timing-function: linear;
 }
 /* Icon assets: a fixed SQUARE, identical for every logo. This is the whole
    point of the reference lockup — same icon box, same text size, every row. */
@@ -2058,11 +2086,14 @@ html.lenis body {
 }
 .client-logo-name {
   flex: 0 0 auto;
-  font-size: clamp(20px, 1.8vw, 30px);
+  font-size: clamp(25px, 2.2vw, 38px);
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
-  color: rgba(255, 255, 255, 0.7);
+  /* Full strength, not a dimmed white. The row's own opacity is what sinks an
+     inactive logo now — baking the dim in here too would multiply the two and
+     leave the off rows almost invisible. */
+  color: #fff;
   transition: color 0.3s ease-out;
 }
 .client-logo.active .client-logo-name {
@@ -2076,16 +2107,16 @@ html.lenis body {
   flex: 0 0 auto;
   /* Sits just after the name. It was previously pushed to the column's right
      edge by a 1fr name track, which left a wide empty gap mid-row. */
-  margin-left: 4px;
-  padding: 4px 10px 3px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  margin-left: 6px;
+  padding: 5px 13px 4px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 999px;
-  font-size: clamp(10px, 0.72vw, 12px);
+  font-size: clamp(12px, 0.95vw, 16px);
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.8);
   transition:
     color 0.3s ease-out,
     border-color 0.3s ease-out;
@@ -2100,7 +2131,9 @@ html.lenis body {
 .client-logo-mark {
   position: absolute;
   inset: 0;
-  background-color: rgba(255, 255, 255, 0.7);
+  /* Full white for the same reason as .client-logo-name — the dim lives on
+     the row. */
+  background-color: #fff;
   mask-repeat: no-repeat;
   /* Centre is enough now: the cell is sized by the sizer <img> to the mark's
      own aspect ratio, so there is no spare room inside it to align within. */
@@ -2172,7 +2205,9 @@ html.lenis body {
      slot — otherwise a long name stretches its item and the logo spacing
      visibly pulses as the track scrolls. */
   .client-logos-marquee-img {
-    /* Same square-icon lockup as desktop, scaled for the strip. */
+    /* Same square-icon lockup as desktop, scaled for the strip. Its own
+       number, deliberately — the desktop sizing has been reworked repeatedly
+       and the strip is not meant to follow it. */
     --cl-m-mark-size: 26px;
     /* Wordmark fallback, as on desktop. */
     --cl-m-mark-h: 22px;
@@ -2293,22 +2328,6 @@ html.lenis body {
   }
   to {
     transform: translateX(-50%);
-  }
-}
-
-@keyframes client-logos-scroll-y {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(-50%);
-  }
-}
-
-/* Desktop list only — the mobile block has its own reduced-motion rule. */
-@media (prefers-reduced-motion: reduce) {
-  .client-logos-list {
-    animation: none;
   }
 }
 

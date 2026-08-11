@@ -57,13 +57,23 @@ export type ClientLogo = {
    * There is no automatic rule for this — it is eyeballed once per asset.
    */
   scale?: number;
+  /**
+   * Desktop-only override for `scale`. The desktop list runs its marks at
+   * ~40px and the mobile marquee at 22px, and the padding inside a viewBox
+   * does not read the same at both sizes — a nudge that squares up the big
+   * list can overshoot in the strip. Falls back to `scale` when unset, so an
+   * asset needing one number everywhere still carries only one.
+   */
+  desktopScale?: number;
 };
 
 /** Client logo SVGs, served locally from public/logos. */
 export const CLIENT_LOGOS: readonly ClientLogo[] = [
   { key: "context-dev", src: "/logos/context_dev.svg", name: "Context.dev", batch: "YC S26" },
-  { key: "tsenta", src: "/logos/tsenta-black.svg", name: "Tsenta", batch: "YC S26" },
-  { key: "click", src: "/logos/click.svg", name: "Click", batch: "YC S26" },
+  // desktopScale: the short chevron and the small arrow read undersized next
+  // to Context.dev's full-square mark on the desktop list. Marquee untouched.
+  { key: "tsenta", src: "/logos/tsenta-black.svg", name: "Tsenta", batch: "YC S26", desktopScale: 1.3 },
+  { key: "click", src: "/logos/click.svg", name: "Click", batch: "YC S26", desktopScale: 1.15 },
   // Wordmark artwork — name is present in the SVG, so it is not printed again.
   // Flip nameInLogo to false (or drop it) as each icon-only asset lands.
   { key: "agnost-ai", src: "/logos/agnost-ai-horizontal.svg", name: "Agnost AI", batch: "YC S26", nameInLogo: true },

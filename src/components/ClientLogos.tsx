@@ -7,14 +7,17 @@ import { CLIENT_LOGOS } from "@/lib/site";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ITEM_HEIGHT = 150;
+/* Row pitch, matching the reference column: a 240px slot per logo, three
+   slots in the window. The generous slot is what gives the list its rhythm —
+   the mark occupies roughly its top two thirds and the rest is air. */
+const ITEM_HEIGHT = 190;
 const WINDOW_SLOTS = 3;
 
 /**
- * Both layouts loop continuously under a CSS animation, so "which logo is
- * centred" cannot be derived from scroll position — it has to be measured per
- * frame. Desktop travels vertically, mobile horizontally; that axis is the
- * only difference, so they share this.
+ * The mobile marquee loops continuously under a CSS animation, so "which logo
+ * is centred" cannot be derived from scroll position — it has to be measured
+ * per frame. (The desktop list is scrubbed by scroll instead, so it knows its
+ * own active index and does not need this.)
  *
  * Two things here are not obvious and both fix real bugs:
  *
@@ -147,18 +150,9 @@ function useCenterTracker(
 export default function ClientLogos() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
-  const windowRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const marqueeRef = useRef<HTMLDivElement>(null);
 
-  // Desktop: the list loops vertically through the clipped window.
-  useCenterTracker(
-    sectionRef,
-    windowRef,
-    "(min-width: 901px)",
-    "y",
-    ".client-logo",
-    "active",
-  );
   // Mobile: horizontal marquee. Behaviour unchanged.
   useCenterTracker(
     sectionRef,
@@ -169,12 +163,11 @@ export default function ClientLogos() {
     "is-centered",
   );
 
-  // The heading still reveals on scroll — only the logo list was moved off
-  // scroll position onto its own timer.
   useEffect(() => {
     const section = sectionRef.current;
     const heading = headingRef.current;
-    if (!section || !heading) return;
+    const list = listRef.current;
+    if (!section || !heading || !list) return;
 
     const ctx = gsap.context(() => {
       const words = heading.querySelectorAll("[data-word]");
@@ -189,6 +182,40 @@ export default function ClientLogos() {
           trigger: section,
           start: "top 70%",
           toggleActions: "play none none reverse",
+        },
+      });
+
+      // The list is driven by scroll position: it slides upward through the
+      // clipped window as the tall section passes, and whichever row is
+      // centred in that window is the recoloured one. centerOffset starts the
+      // first row centred rather than flush with the window's top edge.
+      const centerOffset = (ITEM_HEIGHT * (WINDOW_SLOTS - 1)) / 2;
+      const lastIndex = CLIENT_LOGOS.length - 1;
+
+      gsap.set(list, { y: centerOffset });
+
+      // The highlight is a DOM class rather than React state: onUpdate fires
+      // on every scrubbed frame, and re-rendering the whole list at that rate
+      // to change one class is work for nothing.
+      const rows = list.querySelectorAll<HTMLElement>(".client-logo");
+      let activeIndex = -1;
+      const setActive = (idx: number) => {
+        if (idx === activeIndex) return;
+        rows.forEach((row, i) => row.classList.toggle("active", i === idx));
+        activeIndex = idx;
+      };
+      setActive(0);
+
+      ScrollTrigger.create({
+        trigger: section,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: true,
+        onUpdate: (self) => {
+          gsap.set(list, {
+            y: centerOffset - self.progress * lastIndex * ITEM_HEIGHT,
+          });
+          setActive(Math.round(self.progress * lastIndex));
         },
       });
     }, section);
@@ -217,40 +244,36 @@ export default function ClientLogos() {
 
         <div
           className="client-logos-window"
-          ref={windowRef}
           style={{ height: ITEM_HEIGHT * WINDOW_SLOTS }}
         >
-          {/* Duplicated for the seamless vertical loop, exactly like the
-              mobile marquee. Rows are a fixed ITEM_HEIGHT with no gap between
-              them, so half the list is precisely one copy and
-              translateY(-50%) wraps with no seam — the half-gap error that
-              had to be worked around on the horizontal track cannot occur
-              here. `top` offsets the list so a row sits centred in the
-              window rather than flush with its top edge. */}
-          <div
-            className="client-logos-list"
-            style={{ top: (ITEM_HEIGHT * (WINDOW_SLOTS - 1)) / 2 }}
-          >
-            {[...CLIENT_LOGOS, ...CLIENT_LOGOS].map((logo, i) => (
+          {/* One copy, not two: the list is scrubbed from the first row to the
+              last and stops there, so there is no wrap to cover. Its vertical
+              position is owned by GSAP — no `top` here, or the two offsets
+              would stack. */}
+          <div className="client-logos-list" ref={listRef}>
+            {CLIENT_LOGOS.map((logo) => (
               <div
                 // is-wordmark marks the assets that are not yet icon-only.
                 // A wordmark cannot go in the square icon box — at 6.3:1 it
                 // would render a few pixels tall — so it keeps the cap-height
                 // treatment until an icon-only SVG replaces it.
                 //
-                // No `active` here: the tracker applies it per frame to both
-                // copies of whichever logo is centred.
+                // No `active` here: the scrub applies it as a DOM class to
+                // whichever row is centred in the window.
                 className={`client-logo${logo.nameInLogo ? " is-wordmark" : ""}`}
                 style={{ height: ITEM_HEIGHT }}
-                aria-hidden={i >= CLIENT_LOGOS.length ? true : undefined}
-                key={`${logo.key}-${i}`}
+                key={logo.key}
               >
                 {/* The mark sits in a fixed-size cell rather than being
                     allowed to size itself, so every logo occupies the same
                     box and the column lines up down the list. */}
                 <span
                   className="client-logo-icon"
-                  style={{ "--logo-scale": logo.scale ?? 1 } as CSSProperties}
+                  style={
+                    {
+                      "--logo-scale": logo.desktopScale ?? logo.scale ?? 1,
+                    } as CSSProperties
+                  }
                 >
                   {/* Invisible sizer: a masked element has no intrinsic size,
                       so the real <img> supplies the aspect ratio the mask is
