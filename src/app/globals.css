@@ -28,16 +28,19 @@
 }
 .brand-mark-rule {
   display: block;
-  width: 32px;
-  height: 1px;
-  background: currentColor;
-  opacity: 0.4;
+  font-size: 18px;
+  font-weight: 700;
+  color: #ff6600;
+  transform: skewX(-15deg);
 }
 .brand-mark-tag {
   font-size: 11px;
-  letter-spacing: 0.35em;
+  letter-spacing: 0.40em;
   opacity: 0.85;
+  position: relative;
+  top: 1px;
 }
+
 .book-call-button {
   position: fixed;
   z-index: 50;

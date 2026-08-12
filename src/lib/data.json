@@ -76,18 +76,5 @@
         "likesCount": 285,
         "commentsCount": 42,
         "batch": "YC S26"
-    },
-    {
-        "id": 7,
-        "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/quality/agnost_founder.jpeg",
-        "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Founder_journey.mp4",
-        "client": "Agnost",
-        "description": "The journey of Agnost's founder as they navigate the challenges and opportunities of building a revolutionary AI-powered platform.",
-        "category": "Founder Story",
-        "url": "https://x.com/ShubhamInTech/status/2046998021708349562",
-        "viewsCount": 32296,
-        "likesCount": 493,
-        "commentsCount": 71,
-        "batch": "YC S26"
     }
 ]
