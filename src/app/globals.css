@@ -1,38 +1,136 @@
 @import "tailwindcss";
 
+/* Corner brand mark, styled to match the film cards' own index label
+   (.film-index / .film-index-num / .film-index-rule / .film-index-tag —
+   "01 — LAUNCH FILM"): same fonts, same hairline-rule-between-labels
+   construction, just "VIR" standing in for the number and "PORTFOLIO" for
+   the eyebrow tag. Desktop only — .site-header itself has no box here, its
+   two children (.brand-mark, .book-call-button) are independently
+   position:fixed to the page corners. */
+.brand-mark {
+  position: fixed;
+  z-index: 50;
+  top: 32px;
+  left: 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-aeonik), var(--font-sans), sans-serif;
+  line-height: 1;
+  text-transform: uppercase;
+  color: #0b0b0b;
+  pointer-events: none;
+}
+.brand-mark-vir {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.brand-mark-rule {
+  display: block;
+  width: 32px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.4;
+}
+.brand-mark-tag {
+  font-size: 11px;
+  letter-spacing: 0.35em;
+  opacity: 0.85;
+}
+.book-call-button {
+  position: fixed;
+  z-index: 50;
+  top: 28px;
+  right: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 999px;
+  background: #ff6600;
+  color: #fff;
+  font-family: var(--font-aeonik), var(--font-sans), sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: opacity 0.2s ease;
+}
+.book-call-button:hover {
+  opacity: 0.88;
+}
+
 /* Framed editorial hero rebuilt from the HTML and computed CSS in w.txt. */
 .matter-hero {
   position: relative;
   z-index: 1;
-  display: grid;
-  min-height: 860px;
-  place-items: center;
-  padding: 40px 0 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: 0;
   overflow: hidden;
   background: #fff;
   color: #0b0b0b;
   font-family: var(--font-aeonik), var(--font-sans), sans-serif;
+  box-sizing: border-box;
 }
-.matter-hero-frame { position: absolute; inset: 0; pointer-events: none; }
-.matter-hero-rule { position: absolute; display: block; background: rgba(11, 11, 11, 0.18); }
+.matter-hero-rule { display: block; background: rgba(11, 11, 11, 0.18); }
+/* Flex-grown, not a fixed height: the card's height is content-dependent
+   (two-line vs three-line heading, wrapping, etc.), so a fixed length here
+   drifted apart from the card's actual edge whenever that content changed.
+   Growing to fill the remaining column space always lands exactly at the
+   card's top, the same way the left/right rules are calc'd to exactly reach
+   the card's sides.
+   min-height/min-width: 0 — Safari's flex items default to a content-based
+   auto minimum, which on an empty div can stop it shrinking/growing the way
+   Chrome does, so the two browsers disagreed on how tall this ended up. */
 .matter-hero-rule--top,
-.matter-hero-rule--bottom { left: 50%; width: 1px; height: max(12vh, 80px); }
-.matter-hero-rule--top { top: 0; height: max(18vh, 150px); }
-.matter-hero-rule--bottom { bottom: 0; }
+.matter-hero-rule--bottom {
+  width: 1px;
+  min-height: 0;
+  flex: 1 1 1;
+}
+/* Overlaps the card's border by 4px — the same -4px offset used by
+   .matter-hero-dot--tl/tr — so the line runs into the corner dot's centre
+   the way the left/right rules do (they land at right:100%/left:100%, flush
+   on the card's edge where the dot is centred). Without this the line
+   stopped at the card's border, short of the dot itself. */
+.matter-hero-rule--top { margin-bottom: -4px; }
+/* Spacer only, to balance the top rule and keep the card centred — not
+   meant to be visible as a line. */
+.matter-hero-rule--bottom { background: transparent; }
+/* vw, not %: these are anchored to the card (right:100%/left:100%), and the
+   card is only ~740-820px wide — a % width here would resolve against the
+   card's own box and stop dead at a few hundred pixels instead of reaching
+   the viewport edge. vw is a fixed viewport measurement independent of
+   whatever box contains the element, so it reaches the edge regardless of
+   which element they're anchored to. */
 .matter-hero-rule--left,
 .matter-hero-rule--right {
+  position: absolute;
   top: 50%;
   width: calc((100vw - min(740px, calc(100vw - 48px))) / 2);
+  min-width: 0;
   height: 1px;
 }
-.matter-hero-rule--left { left: 0; }
-.matter-hero-rule--right { right: 0; }
+/* Anchored to the card itself (right:100%/left:100%) rather than the
+   viewport frame, so top:50% always lines up with the card's own vertical
+   centre regardless of the card's rendered height. */
+.matter-hero-rule--left { right: 100%; }
+.matter-hero-rule--right { left: 100%; }
 .matter-hero-card {
   position: relative;
-  width: min(820px, calc(100vw - 48px));
+  display: flex;
+  width: min(820px, calc(100% - 48px));
+  max-width: 100%;
   min-height: 470px;
   padding: 60px 48px;
   border: 1px solid rgba(11, 11, 11, 0.18);
+  box-sizing: border-box;
 }
 .matter-hero-card::before {
   content: "";
@@ -48,6 +146,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
   text-align: center;
 }
 .matter-hero-badge {
@@ -76,8 +175,9 @@
 }
 .matter-hero-copy h1 {
   margin: 0;
-  font-size: clamp(36px, 4.2vw, 62px);
-  font-weight: 700;
+  font-family: var(--font-geist);
+  font-size: clamp(28px, 3.2vw, 46px);
+  font-weight: 300;
   letter-spacing: -0.03em;
   line-height: 1.05;
   text-transform: uppercase;
@@ -102,7 +202,9 @@
   display: flex;
   align-items: center;
   column-gap: 16px;
-  margin-top: 28px;
+  margin-top: auto;
+  padding-top: 28px;
+  font-family: var(--font-geist);
   font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -111,7 +213,8 @@
   white-space: nowrap;
 }
 .matter-hero-services-slash {
-  opacity: 0.2;
+  opacity: 0.3;
+  font-weight: bolder;
 }
 .matter-hero-dot {
   position: absolute;
@@ -125,20 +228,62 @@
 .matter-hero-dot--tr { right: -4px; top: -4px; }
 .matter-hero-dot--bl { left: -4px; bottom: -4px; }
 .matter-hero-dot--br { right: -4px; bottom: -4px; }
-@media (max-width: 760px) {
-  .matter-hero { min-height: 620px; height: auto; }
-  .matter-hero-card { width: calc(100vw - 32px); min-height: 420px; padding: 40px 24px; }
+/* Five explicit tiers instead of one collapse point at 760px. The card, the
+   badge and the left/right rule length are all sized off viewport units
+   (vw, %), so a device landing between the old single breakpoint and desktop
+   could render at a size nobody had actually checked. Each tier below pins
+   down a size that's been looked at, so nothing is left to interpolate on
+   its own. Centering itself doesn't need a breakpoint — .matter-hero is a
+   flex column with align-items: center at every width — these tiers only
+   tune sizing so content doesn't overflow or crowd at that size. */
+
+/* 1. Mobile phones */
+@media (max-width: 480px) {
+  .matter-hero { min-height: 560px; height: auto; padding: 32px 0 16px; }
+  .matter-hero-card { width: calc(100% - 24px); min-height: 400px; padding: 32px 18px; }
+  .matter-hero-badge { gap: 6px; padding: 7px 12px; font-size: 10px; white-space: nowrap; }
+  .matter-hero-badge-combinator { width: 76px; height: 22px; vertical-align: -7px; }
+  .matter-hero-badge-mark { width: 14px; height: 14px; vertical-align: -3px; }
+  .matter-hero-copy h1 { font-size: clamp(24px, 8vw, 32px); }
+  .matter-hero-intro { width: min(260px, 90%); font-size: 13px; }
+  .matter-hero-services { flex-wrap: wrap; justify-content: center; row-gap: 6px; column-gap: 10px; font-size: 12px; }
+  .matter-hero-rule--left,
+  .matter-hero-rule--right { width: 12px; }
+}
+
+/* 2. Tablets & large phones */
+@media (min-width: 481px) and (max-width: 768px) {
+  .matter-hero { min-height: 620px; height: auto; padding: 36px 0 16px; }
+  .matter-hero-card { width: calc(100% - 32px); min-height: 420px; padding: 40px 24px; }
   /* The pill was full desktop size (130px logo + 14px text) on a ~300px-wide
      card, so it always overflowed onto two lines. Scaled down and pinned to
      one line — nowrap so it shrinks instead of wrapping mid-word. */
   .matter-hero-badge { gap: 6px; padding: 7px 12px; font-size: 11px; white-space: nowrap; }
   .matter-hero-badge-combinator { width: 88px; height: 26px; vertical-align: -8px; }
   .matter-hero-badge-mark { width: 16px; height: 16px; vertical-align: -4px; }
-  .matter-hero-copy h1 { font-size: clamp(30px, 9vw, 44px); }
-  .matter-hero-intro { width: min(280px, 88%); }
+  .matter-hero-copy h1 { font-size: clamp(30px, 7vw, 40px); }
+  .matter-hero-intro { width: min(320px, 88%); }
   .matter-hero-services { flex-wrap: wrap; justify-content: center; row-gap: 8px; font-size: 15px; }
   .matter-hero-rule--left,
-  .matter-hero-rule--right { width: 16px; }
+  .matter-hero-rule--right { width: 24px; }
+}
+
+/* 3. Laptops & small screens */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .matter-hero-card { width: min(680px, calc(100% - 48px)); padding: 52px 40px; }
+  .matter-hero-copy h1 { font-size: clamp(28px, 3.6vw, 40px); }
+}
+
+/* 4. Desktops */
+@media (min-width: 1025px) and (max-width: 1200px) {
+  .matter-hero-card { width: min(760px, calc(100% - 48px)); }
+}
+
+/* 5. Extra-large screens (4K, TVs) — the card and rule widths already cap
+   via min()/vw math, so this tier only stops the card thinning out as a
+   sliver of a much wider viewport. */
+@media (min-width: 1201px) {
+  .matter-hero-card { width: min(820px, calc(100% - 48px)); }
 }
 
 /* ------------------------------------------------------------------
@@ -580,24 +725,26 @@ html.lenis body {
   z-index: 2;
   left: 30px;
   right: 30px;
-  bottom: 30px;
-  height: 63px;
+  bottom: 25px;
+  height: auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  column-gap: 42px;
+  row-gap: 14px;
   overflow: hidden;
 }
 .names-you-know-label {
   flex-shrink: 0;
-  font-size: 11px;
+  font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
+  text-align: center;
   color: #0b0b0b;
   opacity: 0.6;
 }
 .names-you-know-track-mask {
-  flex: 1;
+  width: 100%;
   overflow: hidden;
   mask-image: linear-gradient(
     to right,
@@ -633,7 +780,7 @@ html.lenis body {
   /* Bigger than the tallest scaled icon (--nyk-mark-size * up to 1.3x
      desktopScale, ~50px) so the bar's own overflow:hidden doesn't clip it. */
   height: 52px;
-  margin-right: 42px;
+  margin-right: 8rem;
 }
 .names-you-know-icon {
   display: flex;
@@ -676,12 +823,33 @@ html.lenis body {
 }
 /* Tsenta only, per the reference's computed style for its <span class="ts-fh">
    label — every other logo keeps the shared .names-you-know-text rule above. */
+/* Context.dev only, per their site's computed style for the wordmark
+   ("IBM Plex Sans", font-weight: 500) — every other logo keeps the shared
+   .names-you-know-text rule above. */
+.names-you-know-text--context-dev {
+  font-family: var(--font-ibm-plex-context), "IBM Plex Sans", sans-serif;
+  font-weight: 500;
+  letter-spacing: normal;
+}
 .names-you-know-text--tsenta {
   font-family: var(--font-inter), Inter, ui-sans-serif, system-ui, sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.7px;
   color: rgb(0, 0, 0);
+}
+/* Click only, per their site's computed style ("Helvetica Neue", falling
+   back to Arial — which is what actually rendered, per the resolved font
+   name — font-weight: 600). Letter-spacing is in em, not their raw -1.98px:
+   that px value was measured at their 36px heading size, and this row runs
+   the text at 17px, so copying the px value verbatim would have looked far
+   tighter here than it did on their page. em keeps the same -5.5% ratio at
+   whatever size this row uses. */
+.names-you-know-text--click {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  color: rgb(17, 18, 15);
 }
 .names-you-know-batch {
   flex: 0 0 auto;
@@ -1441,10 +1609,12 @@ html.lenis body {
   position: relative;
   z-index: 10;
   background: #fff;
-  padding: 24vh 6vw 10vh;
+  padding: 14vh 6vw 10vh;
   text-align: center;
 }
 .portfolio-heading {
+  font-family: var(--font-geist);
+  font-weight: 600;
   font-size: clamp(2.5rem, 7vw, 6rem);
   line-height: 1;
   letter-spacing: -0.02em;
@@ -1475,7 +1645,7 @@ html.lenis body {
      — horizontal margin only, no extra vertical padding beyond the gap
      below. */
   padding: 0 3.2vw;
-  margin-bottom: 0.4vw;
+  margin-bottom: 2.2vw;
   /* The pop-out depends on a perspective ancestor — without it the card's
      rotateX flattens into a plain squash and nothing appears to come
      forward. Set here rather than on the card so each card gets its own
@@ -1901,6 +2071,10 @@ html.lenis body {
   font-family: var(--font-card-display);
   font-weight: 400;
   letter-spacing: -0.01em;
+}
+.portfolio-premium h2.portfolio-heading {
+  font-family: var(--font-geist);
+  font-weight: 600;
 }
 
 /* Static film grain. Same feTurbulence data-URI the VHS layer uses, at a
@@ -2489,7 +2663,7 @@ html.lenis body {
     /* The track's spacing lives here, not as `gap` on the track — see the
        seamless-loop note above. Changing this number is still the way to tune
        the strip's density; it stays correct because every item carries one. */
-    margin-right: 26px;
+    margin-right: 20em;
     transform: scale(0.92);
     transition: transform 0.35s ease-out;
   }

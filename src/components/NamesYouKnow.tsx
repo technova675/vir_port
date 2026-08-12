@@ -70,7 +70,7 @@ const NATURAL_SIZE: Record<string, { w: number; h: number }> = {
 export default function NamesYouKnow() {
   return (
     <section className="names-you-know" aria-label="Names you know">
-      <span className="names-you-know-label">Names you know</span>
+      <span className="names-you-know-label">Trusted By Teams At</span>
       <div className="names-you-know-track-mask">
         <div className="names-you-know-track">
           {/* Four copies, not two — this bar spans the hero's own width
@@ -110,7 +110,15 @@ export default function NamesYouKnow() {
 
               {!logo.nameInLogo && (
                 <span
-                  className={`names-you-know-text${logo.key === "tsenta" ? " names-you-know-text--tsenta" : ""}`}
+                  className={`names-you-know-text${
+                    logo.key === "tsenta" ? " names-you-know-text--tsenta" : ""
+                  }${
+                    logo.key === "context-dev"
+                      ? " names-you-know-text--context-dev"
+                      : ""
+                  }${
+                    logo.key === "click" ? " names-you-know-text--click" : ""
+                  }`}
                   aria-hidden={i >= CLIENT_LOGOS.length ? true : undefined}
                 >
                   {logo.name}

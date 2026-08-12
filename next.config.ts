@@ -21,6 +21,15 @@ const nextConfig: NextConfig = {
    */
   allowedDevOrigins: ["192.168.1.*"],
 
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "framerusercontent.com",
+      },
+    ],
+  },
+
   /**
    * Files in public/ are served with `max-age=0, must-revalidate` by default,
    * which costs a conditional request on every repeat view. The hero crops are

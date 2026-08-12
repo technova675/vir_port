@@ -67,32 +67,15 @@ export type ClientLogo = {
   desktopScale?: number;
 };
 
-/** Client logo SVGs, served locally from public/logos. */
-// export const CLIENT_LOGOS: readonly ClientLogo[] = [
-//   { key: "context-dev", src: "/logos/context_dev.svg", name: "Context.dev", batch: "YC S26" },
-//   // desktopScale: the short chevron and the small arrow read undersized next
-//   // to Context.dev's full-square mark on the desktop list. Marquee untouched.
-//   { key: "tsenta", src: "/logos/tsenta-black.svg", name: "Tsenta", batch: "YC S26", desktopScale: 1.3 },
-//   { key: "click", src: "/logos/click.svg", name: "Click", batch: "YC S26", desktopScale: 1.15 },
-//   // Wordmark artwork — name is present in the SVG, so it is not printed again.
-//   // Flip nameInLogo to false (or drop it) as each icon-only asset lands.
-//   { key: "agnost-ai", src: "/logos/agnost-ai-horizontal.svg", name: "Agnost AI", batch: "YC S26", nameInLogo: true },
-//   { key: "duo", src: "/logos/duo.svg", name: "Duo", nameInLogo: true },
-//    { key: "starknet", src: "/logos/starknet.svg", name: "StarkNet", nameInLogo: true },
-//   { key: "agglayer", src: "/logos/agglayer.svg", name: "Agglayer", nameInLogo: true },
-//   { key: "aptos", src: "/logos/aptos.svg", name: "Aptos", nameInLogo: true },
-//   { key: "biconomy", src: "/logos/biconomy.svg", name: "Biconomy", nameInLogo: true },
-// ];
-
 export const CLIENT_LOGOS: readonly ClientLogo[] = [
-  { key: "context-dev", src: "/logos/context_dev.svg", name: "Context.dev", batch: "YC S26" },
-  { key: "tsenta", src: "/logos/tsenta-black.svg", name: "Tsenta", batch: "YC S26" },
-  { key: "click", src: "/logos/click.svg", name: "Click", batch: "YC S26"},
-  { key: "agnost-ai", src: "/logos/agnost-ai-horizontal.svg", name: "Agnost AI", batch: "YC S26", nameInLogo: true },
-  { key: "duo", src: "/logos/duo.svg", name: "Duo", nameInLogo: true },
-   { key: "starknet", src: "/logos/starknet.svg", name: "StarkNet", nameInLogo: true },
-  { key: "agglayer", src: "/logos/agglayer.svg", name: "Agglayer", nameInLogo: true },
+  { key: "context-dev", src: "/logos/context_dev.svg", name: "Context.dev", batch: "YC S26", nameInLogo: false },
+  { key: "tsenta", src: "https://tsenta.com/assets/brand/tsenta-black.png", name: "Tsenta", batch: "YC S26", nameInLogo: false },
+  { key: "click", src: "/logos/click.svg", name: "Click", batch: "YC S26", nameInLogo: false },
+  { key: "agnost-ai", src: "https://agnost.ai/logos/agnost-ai-horizontal.png", name: "Agnost AI", batch: "YC S26", nameInLogo: true },
   { key: "aptos", src: "/logos/aptos.svg", name: "Aptos", nameInLogo: true },
+  { key: "duo", src: "/logos/duo.svg", name: "Duo", nameInLogo: true },
+  { key: "starknet", src: "/logos/starknet.svg", name: "StarkNet", nameInLogo: true },
+  { key: "agglayer", src: "/logos/agglayer.svg", name: "Agglayer", nameInLogo: true },
   { key: "biconomy", src: "/logos/biconomy.svg", name: "Biconomy", nameInLogo: true },
 ];
 
