@@ -94,8 +94,8 @@ export const SITE = {
 } as const;
 
 export const SOCIALS = [
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/thevirofficial/" },
   { label: "X", href: "https://x.com/Thevirofficial" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/thevirofficial/" },
 ] as const;
 
 /** Right-rail scroll markers — one per major section. */

@@ -9,10 +9,10 @@ import BookCallButton from "@/components/BookCallButton";
 export default function Home() {
   return (
     <main>
-      {/* <div className="site-header">
+      <div className="site-header">
         <BrandMark />
         <BookCallButton />
-      </div> */}
+      </div>
       <Hero />
       <NamesYouKnow />
       <Portfolio />
