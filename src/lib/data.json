@@ -1,7 +1,7 @@
 [
     {
         "id": 1,
-        "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/quality/context.jpeg",
+        "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Context.png",
         "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Context.mp4",
         "client": "Context",
         "description": "Context is a revolutionary platform that transforms the way we interact with digital content. With its immersive virtual reality experiences and intuitive user interface, Context provides an unparalleled level of engagement and personalization. From interactive storytelling to collaborative workspaces, Context offers a seamless blend of creativity and functionality.",
@@ -40,6 +40,19 @@
     },
     {
         "id": 4,
+        "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/click.png",
+        "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Click.mp4",
+        "client": "Click",
+        "description": "Click is a cutting-edge platform that redefines the boundaries of digital creativity. With its innovative tools and intuitive design, Click empowers users to bring their imagination to life in ways previously thought impossible.",
+        "category": "Launch Film",
+        "url": "https://x.com/pulkit_gupta2/status/2083232873071730766",
+        "viewsCount": 57491,
+        "likesCount": 371,
+        "commentsCount": 81,
+        "batch": "YC S26"
+    },
+    {
+        "id": 5,
         "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/quality/rage_prompt.jpeg",
         "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/AGN.mp4",
         "client": "Agnost",
@@ -52,7 +65,7 @@
         "batch": "YC S26"
     },
     {
-        "id": 5,
+        "id": 6,
         "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/quality/agnost.jpeg",
         "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Agnost_AI_Launch.mp4",
          "client": "Agnost",
@@ -65,7 +78,7 @@
         "batch": "YC S26"
     },
     {
-        "id": 6,
+        "id": 7,
         "image": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/quality/agnost_founder.jpeg",
         "video": "https://pub-f1d7e227fc414580986e6b19571e55d3.r2.dev/portfolio/Founder_journey.mp4",
         "client": "Agnost",

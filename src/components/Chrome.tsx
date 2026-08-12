@@ -22,17 +22,6 @@ export default function Chrome() {
 
   return (
     <>
-      <div className="ui-gradient-top" />
-      <div className="ui-gradient-bottom" />
-
-      {/* eslint-disable-next-line @next/next/no-img-element 
-      <img
-        id="logo"
-        src="/logo.png"
-        alt="Logo"
-        className={scrolled ? "shrunk" : undefined}
-        onClick={() => scrollToSelector("body")}
-      />*/}
       <nav className={`scroll-nav${scrolled ? " visible" : ""}`}>
         {SCROLL_SECTIONS.map((s, i) => (
           <button
@@ -47,18 +36,6 @@ export default function Chrome() {
         ))}
         <div className="scroll-progress-indicator">{pct}%</div>
       </nav>
-
-      <div
-        className="scroll-arrows"
-        style={{
-          opacity: scrolled ? 0 : 1,
-          transform: scrolled ? "translateY(20px)" : "none",
-        }}
-      >
-        <div className="scroll-arrow" />
-        <div className="scroll-arrow" />
-        <div className="scroll-arrow" />
-      </div>
     </>
   );
 }

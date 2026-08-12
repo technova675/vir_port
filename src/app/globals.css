@@ -1,5 +1,146 @@
 @import "tailwindcss";
 
+/* Framed editorial hero rebuilt from the HTML and computed CSS in w.txt. */
+.matter-hero {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  min-height: 860px;
+  place-items: center;
+  padding: 40px 0 16px;
+  overflow: hidden;
+  background: #fff;
+  color: #0b0b0b;
+  font-family: var(--font-aeonik), var(--font-sans), sans-serif;
+}
+.matter-hero-frame { position: absolute; inset: 0; pointer-events: none; }
+.matter-hero-rule { position: absolute; display: block; background: rgba(11, 11, 11, 0.18); }
+.matter-hero-rule--top,
+.matter-hero-rule--bottom { left: 50%; width: 1px; height: max(12vh, 80px); }
+.matter-hero-rule--top { top: 0; height: max(18vh, 150px); }
+.matter-hero-rule--bottom { bottom: 0; }
+.matter-hero-rule--left,
+.matter-hero-rule--right {
+  top: 50%;
+  width: calc((100vw - min(740px, calc(100vw - 48px))) / 2);
+  height: 1px;
+}
+.matter-hero-rule--left { left: 0; }
+.matter-hero-rule--right { right: 0; }
+.matter-hero-card {
+  position: relative;
+  width: min(820px, calc(100vw - 48px));
+  min-height: 470px;
+  padding: 60px 48px;
+  border: 1px solid rgba(11, 11, 11, 0.18);
+}
+.matter-hero-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(8px);
+}
+.matter-hero-copy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.matter-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 28px;
+  padding: 10px 20px;
+  border: 1px solid rgba(11, 11, 11, 0.18);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.matter-hero-badge-combinator {
+  display: inline-block;
+  width: 130px;
+  height: 39px;
+  margin-left: 2px;
+  vertical-align: -12px;
+}
+.matter-hero-badge-mark {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  vertical-align: -6px;
+}
+.matter-hero-copy h1 {
+  margin: 0;
+  font-size: clamp(36px, 4.2vw, 62px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+.matter-hero-slashes {
+  margin: 20px 0;
+  color: #ff621c;
+  font-size: 18px;
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+.matter-hero-intro {
+  width: min(420px, 92%);
+  margin: 0;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+  opacity: 0.75;
+}
+.matter-hero-services {
+  display: flex;
+  align-items: center;
+  column-gap: 16px;
+  margin-top: 28px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.matter-hero-services-slash {
+  opacity: 0.2;
+}
+.matter-hero-dot {
+  position: absolute;
+  z-index: 3;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(11, 11, 11, 0.6);
+}
+.matter-hero-dot--tl { left: -4px; top: -4px; }
+.matter-hero-dot--tr { right: -4px; top: -4px; }
+.matter-hero-dot--bl { left: -4px; bottom: -4px; }
+.matter-hero-dot--br { right: -4px; bottom: -4px; }
+@media (max-width: 760px) {
+  .matter-hero { min-height: 620px; height: auto; }
+  .matter-hero-card { width: calc(100vw - 32px); min-height: 420px; padding: 40px 24px; }
+  /* The pill was full desktop size (130px logo + 14px text) on a ~300px-wide
+     card, so it always overflowed onto two lines. Scaled down and pinned to
+     one line — nowrap so it shrinks instead of wrapping mid-word. */
+  .matter-hero-badge { gap: 6px; padding: 7px 12px; font-size: 11px; white-space: nowrap; }
+  .matter-hero-badge-combinator { width: 88px; height: 26px; vertical-align: -8px; }
+  .matter-hero-badge-mark { width: 16px; height: 16px; vertical-align: -4px; }
+  .matter-hero-copy h1 { font-size: clamp(30px, 9vw, 44px); }
+  .matter-hero-intro { width: min(280px, 88%); }
+  .matter-hero-services { flex-wrap: wrap; justify-content: center; row-gap: 8px; font-size: 15px; }
+  .matter-hero-rule--left,
+  .matter-hero-rule--right { width: 16px; }
+}
+
 /* ------------------------------------------------------------------
    Design tokens — extracted from the reference hero capture
 ------------------------------------------------------------------ */
@@ -429,48 +570,174 @@ html.lenis body {
 }
 
 /* ------------------------------------------------------------------
-   Scroll arrows
+   Names you know — pinned to the bottom edge of the hero's own box,
+   matching the reference's `bottom:30px; left:30px; right:30px;
+   height:63px` bar (not a separate section stacked below it, which is
+   what produced the big dead gap before the card and the logos).
 ------------------------------------------------------------------ */
-.scroll-arrows {
-  position: fixed;
-  bottom: 52px;
-  left: 50%;
-  margin-left: -10px;
-  width: 20px;
+.names-you-know {
+  position: absolute;
+  z-index: 2;
+  left: 30px;
+  right: 30px;
+  bottom: 30px;
+  height: 63px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
-  z-index: 100;
-  transition: all 0.8s var(--ease-out-expo);
-  /* The hero's lower band is bright (concrete, exhaust plume), so bone-white
-     chevrons vanished against it. A dark shadow keeps them legible on any
-     part of the photo without adding a visible scrim. */
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.85))
-    drop-shadow(0 0 10px rgba(0, 0, 0, 0.55));
+  column-gap: 42px;
+  overflow: hidden;
 }
-.scroll-arrow {
-  width: 20px;
-  height: 20px;
-  border-right: 2px solid var(--color-bone);
-  border-bottom: 2px solid var(--color-bone);
-  transform: rotate(45deg);
-  animation: arrow-blink 1.5s ease-in-out infinite;
+.names-you-know-label {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #0b0b0b;
+  opacity: 0.6;
 }
-.scroll-arrow:nth-child(2) {
-  animation-delay: 0.2s;
+.names-you-know-track-mask {
+  flex: 1;
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0) 0%,
+    rgb(0, 0, 0) 12.5%,
+    rgb(0, 0, 0) 87.5%,
+    rgba(0, 0, 0, 0) 100%
+  );
 }
-.scroll-arrow:nth-child(3) {
-  animation-delay: 0.4s;
+/* Mirrors ClientLogos' mobile marquee sizing/spacing philosophy exactly
+   (see `.client-logos-marquee-*`), including the load-bearing detail: NO
+   `gap` on the track. With `gap`, N items have N-1 gaps, so for an 8+8
+   duplicated track: total = 2S + 15g, and -50% lands at S + 7.5g — half a
+   gap short of the seamless wrap point, which skips the strip sideways on
+   every loop. A per-item `margin-right` instead means total = 2(S + 8g),
+   so -50% is exactly one copy. */
+.names-you-know-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: names-you-know-scroll 28s linear infinite;
 }
-@keyframes arrow-blink {
-  0%,
-  100% {
-    /* Was 0.15 — near-invisible for most of each cycle over a bright photo. */
-    opacity: 0.5;
+.names-you-know-img {
+  --nyk-mark-size: 38px;
+  --nyk-mark-h: 26px;
+  --nyk-mark-max-w: 118px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  /* Bigger than the tallest scaled icon (--nyk-mark-size * up to 1.3x
+     desktopScale, ~50px) so the bar's own overflow:hidden doesn't clip it. */
+  height: 52px;
+  margin-right: 42px;
+}
+.names-you-know-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: var(--nyk-mark-size);
+  height: var(--nyk-mark-size);
+}
+/* Wordmarks (Agnost AI, Agglayer, Aptos, Biconomy…) are wide and short — a
+   square box would crush them, so they keep a fixed height and their own
+   width instead. */
+.names-you-know-img.is-wordmark .names-you-know-icon {
+  width: auto;
+  max-width: var(--nyk-mark-max-w);
+  height: var(--nyk-mark-h);
+}
+.names-you-know-icon img {
+  /* Hard 100%/100%, not auto/auto: this is the exact sizing the old
+     invisible mask "sizer" used, and it's load-bearing. With auto sizing, a
+     narrow-aspect wordmark (Agglayer, ~2.8:1, against the box's own 100:22
+     ~4.5:1 aspect) shrinks to its own natural width instead of filling the
+     reserved slot — so the icon box (width:auto, capped by max-width) settles
+     at that smaller content width instead of the full slot, and the row's
+     per-item spacing goes uneven. A hard 100%/100% always fills the fixed
+     box; object-fit:contain still letterboxes the real image inside it
+     without distorting it or changing the box's own layout size. */
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: scale(var(--logo-scale, 1));
+}
+.names-you-know-text {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: #0b0b0b;
+}
+/* Tsenta only, per the reference's computed style for its <span class="ts-fh">
+   label — every other logo keeps the shared .names-you-know-text rule above. */
+.names-you-know-text--tsenta {
+  font-family: var(--font-inter), Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  color: rgb(0, 0, 0);
+}
+.names-you-know-batch {
+  flex: 0 0 auto;
+  padding: 4px 8px 3px;
+  background: #ff6600;
+  border: 1px solid #ff6600;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #fff;
+}
+@keyframes names-you-know-scroll {
+  from {
+    transform: translateX(0);
   }
-  50% {
-    opacity: 1;
+  to {
+    /* A quarter of the track, since it's the logo list duplicated four
+       times — this covers exactly one original copy's width, same as -50%
+       did when it was duplicated twice, so the loop speed is unchanged. */
+    transform: translateX(-25%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .names-you-know-track {
+    animation: none;
+  }
+}
+@media (max-width: 760px) {
+  .names-you-know {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    height: 48px;
+    column-gap: 20px;
+  }
+  /* Label hidden, logos stay — the marquee is self-explanatory at this
+     width and the label competes with the logos for the little room the
+     bar has left. */
+  .names-you-know-label {
+    display: none;
+  }
+  .names-you-know-img {
+    --nyk-mark-size: 28px;
+    --nyk-mark-h: 19px;
+    --nyk-mark-max-w: 92px;
+    height: 38px;
+    margin-right: 24px;
+  }
+  .names-you-know-text {
+    font-size: 14px;
+  }
+  .names-you-know-text--tsenta {
+    font-size: 13px;
   }
 }
 
@@ -1164,12 +1431,6 @@ html.lenis body {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .scroll-arrow {
-    animation: none;
-    opacity: 0.5;
-  }
-}
 
 /* ------------------------------------------------------------------
    Film card (portfolio)
@@ -1179,7 +1440,7 @@ html.lenis body {
 .portfolio-intro {
   position: relative;
   z-index: 10;
-  background: #000;
+  background: #fff;
   padding: 24vh 6vw 10vh;
   text-align: center;
 }
@@ -1199,7 +1460,7 @@ html.lenis body {
      on a phone the page locked up here. There is no horizontal scroll in
      this section; vertical is exactly what it needs. */
   touch-action: pan-y;
-  background: #000;
+  background: #fff;
 }
 .portfolio-list.grabbing {
   cursor: grabbing;
@@ -1612,9 +1873,9 @@ html.lenis body {
    grain/type/colour discipline never leaks into other sections.
 ------------------------------------------------------------------ */
 .portfolio-premium {
-  --pp-bg: #000;
-  --pp-fg: var(--color-cream);
-  --pp-accent: rgba(250, 247, 239, 0.6);
+  --pp-bg: #fff;
+  --pp-fg: #0b0b0b;
+  --pp-accent: rgba(11, 11, 11, 0.6);
 
   position: relative;
   /* `position: relative` alone does NOT create a stacking context, so the
@@ -2341,7 +2602,7 @@ html.lenis body {
   align-items: center;
   justify-content: center;
   min-height: 100svh;
-  background: #000;
+  background: #fff;
   padding: 8vw 6vw;
 }
 .cta-inner {
@@ -2358,7 +2619,7 @@ html.lenis body {
   justify-content: center;
   flex-wrap: wrap;
   margin: 0 0 2vw;
-  color: #fff;
+  color: #0b0b0b;
   font-family: var(--font-logos-sans);
   font-size: clamp(2.5rem, 9.5vw, 9.5rem);
   font-weight: 700;
@@ -2420,7 +2681,7 @@ html.lenis body {
 
 .cta-subtext {
   margin: 0;
-  color: #fff;
+  color: #0b0b0b;
   font-family: var(--font-logos-sans);
   font-size: clamp(1rem, 1.4vw, 1.5rem);
   font-weight: 400;
@@ -2435,12 +2696,13 @@ html.lenis body {
 }
 .cta-booking-heading {
   margin: 0 0 12px;
+  color: #0b0b0b;
   font-size: clamp(2rem, 3.4vw, 3.25rem);
   font-weight: 400;
 }
 .cta-booking-subtext {
   margin: 0 0 40px;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(11, 11, 11, 0.6);
   font-family: var(--font-logos-sans);
   font-size: clamp(1rem, 1.2vw, 1.25rem);
 }
@@ -2458,7 +2720,7 @@ html.lenis body {
 }
 .cta-socials-label {
   margin: 0 0 18px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(11, 11, 11, 0.5);
   font-family: var(--font-logos-sans);
   font-size: 0.8125rem;
   letter-spacing: 0.28em;
@@ -2485,8 +2747,8 @@ html.lenis body {
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(11, 11, 11, 0.25);
+  color: rgba(11, 11, 11, 0.75);
   transition:
     transform 0.25s ease,
     background 0.25s ease,
@@ -2505,9 +2767,9 @@ html.lenis body {
 }
 .social-icon-link:hover {
   transform: translateY(-3px);
-  background: #fff;
-  border-color: #fff;
-  color: #000;
+  background: #0b0b0b;
+  border-color: #0b0b0b;
+  color: #fff;
 }
 .social-icon-link:focus-visible {
   outline: 2px solid var(--color-brand-pink);
