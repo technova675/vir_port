@@ -65,6 +65,25 @@
   opacity: 0.88;
 }
 
+/* Mobile header. On phones the desktop sizes (32px insets, 14px/11px labels
+   with 0.4em tracking, a 12px/20px pill) added up to more than the viewport
+   width, so "PORTFOLIO" ran off the right edge and the pill sat on top of the
+   hero card. Everything is scaled down and pulled to a 16px inset; the hero's
+   own top padding below opens the gap under it. */
+@media (max-width: 768px) {
+  .brand-mark { top: 14px; left: 16px; gap: 8px; }
+  .brand-mark-vir { font-size: 13px; }
+  .brand-mark-rule { font-size: 16px; }
+  .brand-mark-tag { font-size: 9px; letter-spacing: 0.22em; }
+  .book-call-button {
+    top: 10px;
+    right: 16px;
+    gap: 6px;
+    padding: 9px 14px;
+    font-size: 12px;
+  }
+}
+
 /* Framed editorial hero rebuilt from the HTML and computed CSS in w.txt. */
 .matter-hero {
   position: relative;
@@ -102,7 +121,7 @@
    the way the left/right rules do (they land at right:100%/left:100%, flush
    on the card's edge where the dot is centred). Without this the line
    stopped at the card's border, short of the dot itself. */
-.matter-hero-rule--top { margin-bottom: -4px; }
+.matter-hero-rule--top { margin-bottom: 0px; }
 /* Spacer only, to balance the top rule and keep the card centred — not
    meant to be visible as a line. */
 .matter-hero-rule--bottom { background: transparent; }
@@ -242,22 +261,33 @@
 
 /* 1. Mobile phones */
 @media (max-width: 480px) {
-  .matter-hero { min-height: 560px; height: auto; padding: 32px 0 16px; }
-  .matter-hero-card { width: calc(100% - 24px); min-height: 400px; padding: 32px 18px; }
+  /* padding-top only has to clear the fixed header (pill at top:10px, ~40px
+     tall = ~50px) plus a little breathing room. min-height is kept close to
+     what the section actually needs (60px padding + 340px card): the top rule
+     and the invisible bottom spacer are both flex:1, so any surplus height
+     here is split as dead space above and below the card. */
+  .matter-hero { min-height: 520px; height: auto; padding: 60px 0 16px; }
+  /* 340, down from 400: the services row is margin-top:auto, so whatever
+     height the card has above the copy's own (~250px) shows as space under
+     the slashes. This leaves a deliberate breathing gap without the card
+     collapsing tight around the text. */
+  .matter-hero-card { width: calc(100% - 24px); min-height: 340px; padding: 30px 18px; }
   .matter-hero-badge { gap: 6px; padding: 7px 12px; font-size: 10px; white-space: nowrap; }
   .matter-hero-badge-combinator { width: 76px; height: 22px; vertical-align: -7px; }
   .matter-hero-badge-mark { width: 14px; height: 14px; vertical-align: -3px; }
   .matter-hero-copy h1 { font-size: clamp(24px, 8vw, 32px); }
   .matter-hero-intro { width: min(260px, 90%); font-size: 13px; }
-  .matter-hero-services { flex-wrap: wrap; justify-content: center; row-gap: 6px; column-gap: 10px; font-size: 12px; }
+  .matter-hero-badge { margin-bottom: 20px; }
+  .matter-hero-slashes { margin: 14px 0 0; }
+  .matter-hero-services { flex-wrap: wrap; justify-content: center; row-gap: 6px; column-gap: 10px; font-size: 12px; padding-top: 22px; }
   .matter-hero-rule--left,
   .matter-hero-rule--right { width: 12px; }
 }
 
 /* 2. Tablets & large phones */
 @media (min-width: 481px) and (max-width: 768px) {
-  .matter-hero { min-height: 620px; height: auto; padding: 36px 0 16px; }
-  .matter-hero-card { width: calc(100% - 32px); min-height: 420px; padding: 40px 24px; }
+  .matter-hero { min-height: 460px; height: auto; padding: 64px 0 16px; }
+  .matter-hero-card { width: calc(100% - 32px); min-height: 360px; padding: 34px 24px; }
   /* The pill was full desktop size (130px logo + 14px text) on a ~300px-wide
      card, so it always overflowed onto two lines. Scaled down and pinned to
      one line — nowrap so it shrinks instead of wrapping mid-word. */
@@ -266,7 +296,8 @@
   .matter-hero-badge-mark { width: 16px; height: 16px; vertical-align: -4px; }
   .matter-hero-copy h1 { font-size: clamp(30px, 7vw, 40px); }
   .matter-hero-intro { width: min(320px, 88%); }
-  .matter-hero-services { flex-wrap: wrap; justify-content: center; row-gap: 8px; font-size: 15px; }
+  .matter-hero-slashes { margin: 16px 0 0; }
+  .matter-hero-services { flex-wrap: wrap; justify-content: center; row-gap: 8px; font-size: 15px; padding-top: 26px; }
   .matter-hero-rule--left,
   .matter-hero-rule--right { width: 24px; }
 }
@@ -884,18 +915,27 @@ html.lenis body {
   }
 }
 @media (max-width: 760px) {
+  /* static, not absolute: pinned to the bottom of its container it neither
+     reserved layout space (so it overlapped the "Selected Works" heading
+     below) nor moved up when the hero shortened (so the space between the
+     card and this bar stayed open). In flow it sits directly under the card
+     and pushes the next section down. */
   .names-you-know {
-    left: 16px;
-    right: 16px;
-    bottom: 16px;
-    height: 48px;
+    position: static;
+    height: auto;
+    /* Out of flow it was painted over the white hero and borrowed its
+       backdrop; in flow nothing white is behind it, so body's dark gradient
+       showed through. It carries its own white now. Margin is on the
+       inline sides only — a full-bleed background with inset content. */
+    margin: 0;
+    padding: 24px 16px 8px;
+    background: #fff;
+    row-gap: 8px;
     column-gap: 20px;
   }
-  /* Label hidden, logos stay — the marquee is self-explanatory at this
-     width and the label competes with the logos for the little room the
-     bar has left. */
   .names-you-know-label {
-    display: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
   }
   .names-you-know-img {
     --nyk-mark-size: 28px;
@@ -1614,6 +1654,12 @@ html.lenis body {
   background: #fff;
   padding: 14vh 6vw 10vh;
   text-align: center;
+}
+/* 14vh reads as ~110px of lead-in on a phone, which is a lot of white
+   between the logo marquee and this heading. Trimmed to ~70px on mobile;
+   the sides and bottom keep their values. */
+@media (max-width: 768px) {
+  .portfolio-intro { padding-top: 9vh; }
 }
 .portfolio-heading {
   font-family: var(--font-geist);
