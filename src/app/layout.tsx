@@ -125,9 +125,40 @@ const ibmPlexSansMedium = localFont({
   weight: "500",
 });
 
+const title = "VIR — Builder / storyteller";
+const description = "We make videos that internet loves";
+
 export const metadata: Metadata = {
-  title: "VIR — Builder / storyteller ",
-  description: "We tell big stories for regular sized people.",
+  /**
+   * Required for the generated share card. og:image must be an absolute URL —
+   * crawlers fetch it with no page context — and metadataBase is what Next
+   * resolves the file-convention image against. Without it the build warns and
+   * falls back to localhost, which silently ships a dead image tag.
+   *
+   * `URL` is Netlify's build-time variable for the site's primary address, so
+   * deploys get the real domain without hardcoding one. The literal is only
+   * the local dev fallback; set NEXT_PUBLIC_SITE_URL to override.
+   */
+  metadataBase: new URL(
+    process.env.URL ??
+      process.env.NEXT_PUBLIC_SITE_URL ??
+      "http://localhost:3010",
+  ),
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    type: "website",
+    siteName: "VIR",
+  },
+  twitter: {
+    /* Large card, not the default summary — the hero art is 1200x630 and the
+       small variant would crop it to a square thumbnail. */
+    card: "summary_large_image",
+    title,
+    description,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

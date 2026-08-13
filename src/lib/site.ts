@@ -86,7 +86,8 @@ export const CTA = {
   imageAlt: "Vir",
   bookingHeading: "Book a call",
   bookingSubtext: "Pick a time",
-  calendlyUrl: "https://calendly.com/thevirofficial/meeting",
+  calendlyUrl:
+    "https://calendly.com/thevirofficial/meeting?hide_gdpr_banner=1",
 } as const;
 
 export const SITE = {

@@ -64,6 +64,13 @@
 .book-call-button:hover {
   opacity: 0.88;
 }
+/* Hidden once the CTA section arrives — see BookCallButton.tsx. The element is
+   fixed, so fading it costs no layout shift; pointer-events off stops the
+   invisible pill from eating clicks over the booking form. */
+.book-call-button.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
 
 /* Mobile header. On phones the desktop sizes (32px insets, 14px/11px labels
    with 0.4em tracking, a 12px/20px pill) added up to more than the viewport
@@ -1924,9 +1931,13 @@ html.lenis body {
 .film-batch {
   flex: 0 0 auto;
   padding: 5px 12px 4px;
-  /* No fill — the chip sits directly on the still. Legibility on a bright
-     frame comes from the shadow below, not a plate behind it. */
-  border: 1px solid rgba(250, 247, 239, 0.45);
+  /* Solid orange plate. The chip used to sit unfilled directly on the still
+     and lean on its text-shadow for legibility; the fill makes it hold on any
+     frame, bright or dark, and gives the corner an accent to answer the index
+     stamp opposite it. */
+  background: #ff6600;
+  color: #faf7ef;
+  border: 1px solid #ff6600;
   border-radius: 999px;
   font-family: var(--font-card-serif);
   font-size: clamp(12px, 0.95vw, 17px);
@@ -1943,7 +1954,11 @@ html.lenis body {
      opposite it, but that stamp has the card's scrim under it and this sits
      in the open corner. */
   opacity: 1;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.75);
+  /* Light touch now that the plate carries the contrast — the old 0.75 black
+     glow was sized for unfilled text over a still and reads as smudge on
+     orange. This just keeps the chip from floating off a bright frame. */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
 }
 
 /* Top-right results — the numbers are the proof, so they get display type
@@ -2929,7 +2944,12 @@ html.lenis body {
   font-family: var(--font-logos-sans);
   font-size: clamp(1rem, 1.2vw, 1.25rem);
 }
-.cta-calendly {
+/* Scoped under .cta-booking on purpose. react-calendly imports its own
+   stylesheet, which sets `.calendly-inline-widget { height: 630px }` at the
+   same specificity as a bare `.cta-calendly` — so which height won would come
+   down to bundle order. The extra class settles it here and in the media
+   query below. */
+.cta-booking .cta-calendly {
   min-width: 320px;
   height: 700px;
   overflow: hidden;
@@ -3016,7 +3036,7 @@ html.lenis body {
   .cta-booking {
     margin-top: 56px;
   }
-  .cta-calendly {
+  .cta-booking .cta-calendly {
     height: 1000px;
   }
   .cta-heading {
