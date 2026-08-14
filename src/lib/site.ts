@@ -82,8 +82,6 @@ export const CLIENT_LOGOS: readonly ClientLogo[] = [
 
 /** Call-to-action section — image + copy. */
 export const CTA = {
-  image: "/vir.jpeg",
-  imageAlt: "Vir",
   bookingHeading: "Book a call",
   bookingSubtext: "Pick a time",
   calendlyUrl:

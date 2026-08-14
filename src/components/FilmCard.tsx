@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { FILM_CARDS } from "@/lib/site";
@@ -398,12 +399,26 @@ export default function FilmCard({ data }: { data: FilmCardData }) {
             onClick={play}
             aria-label={`Play ${data.title}`}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            {/* `fill` because the card is the sizing authority: it holds a
+                fixed 16/9 via aspect-ratio, so the still has no intrinsic
+                dimensions to declare. .film-card-image already supplies the
+                inset/object-fit this needs. */}
+            <Image
               className="film-card-image"
               src={data.image}
               alt={data.title}
+              fill
+              /* The card runs full-bleed minus the 3.2vw gutters, capped at
+                 84vh*16/9 on tall viewports. 94vw is that width to within a
+                 hair, and erring high only ever picks a wider candidate. */
+              sizes="(max-width: 768px) 100vw, 94vw"
+              /* Only the first card is above the fold; the rest sit below a
+                 pinned hero and would otherwise all fetch eagerly. */
+              priority={data.index === "01"}
+              loading={data.index === "01" ? undefined : "lazy"}
             />
+            {/* Placeholder is the card's own black (globals.css:1726), so
+                there is no flash of a different colour before decode. */}
             <span className="film-card-play-prompt">Click</span>
           </button>
         )}

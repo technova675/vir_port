@@ -27,7 +27,22 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "framerusercontent.com",
       },
+      /* Portfolio stills (src/lib/data.json). The originals are 1.4-2.4MB
+         PNG/JPEG and R2 serves them with no Cache-Control, so they go
+         through the optimizer rather than straight to the browser. */
+      {
+        protocol: "https",
+        hostname: "pub-f1d7e227fc414580986e6b19571e55d3.r2.dev",
+      },
     ],
+    /* AVIF first: the stills are photographic, which is where it wins most
+       over WebP. Both are tried before falling back to the original. */
+    formats: ["image/avif", "image/webp"],
+    /* R2 sends these stills with no Cache-Control at all, so the optimizer
+       falls back to this. 31 days rather than the 4h default because the
+       artwork is fixed per delivered film — a re-export means a new
+       filename in data.json, which is its own cache key. */
+    minimumCacheTTL: 2678400,
   },
 
   /**
