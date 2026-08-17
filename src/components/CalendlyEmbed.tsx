@@ -15,6 +15,13 @@ import { CTA } from "@/lib/site";
  * react-calendly closes that race — it loads the script itself and calls
  * initInlineWidget explicitly against its own node, after mount, so the div
  * always exists first. It also ships the spinner and the iframe sizing CSS.
+ *
+ * NOTE: do not drive the container height from the widget's own
+ * `onPageHeightResize` message without testing it in a browser first. That was
+ * tried to kill the trailing whitespace under the month view and it collapsed
+ * the embed entirely on desktop while changing nothing on mobile. The height
+ * lives in CSS (see `.cta-booking .cta-calendly`) until someone has actually
+ * logged what Calendly posts here.
  */
 export default function CalendlyEmbed() {
   return (

@@ -219,14 +219,6 @@
   font-weight: 700;
   letter-spacing: 2px;
 }
-.matter-hero-intro {
-  width: min(420px, 92%);
-  margin: 0;
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 1.5;
-  opacity: 0.75;
-}
 .matter-hero-services {
   display: flex;
   align-items: center;
@@ -282,13 +274,125 @@
   .matter-hero-badge { gap: 6px; padding: 7px 12px; font-size: 10px; white-space: nowrap; }
   .matter-hero-badge-combinator { width: 76px; height: 22px; vertical-align: -7px; }
   .matter-hero-badge-mark { width: 14px; height: 14px; vertical-align: -3px; }
-  .matter-hero-copy h1 { font-size: clamp(24px, 8vw, 32px); }
-  .matter-hero-intro { width: min(260px, 90%); font-size: 13px; }
+  .matter-hero-copy h1 { font-size: clamp(1.5rem, 10vw, 3.5rem); }
   .matter-hero-badge { margin-bottom: 20px; }
-  .matter-hero-slashes { margin: 14px 0 0; }
-  .matter-hero-services { flex-wrap: wrap; justify-content: center; row-gap: 6px; column-gap: 10px; font-size: 12px; padding-top: 22px; }
+  .matter-hero-slashes { margin: 2rem 0 0; }
+  /* One line, never two. flex-wrap: wrap here is what broke "FOUNDER VIDEOS"
+     onto its own row, so it goes to nowrap — but nowrap alone would push the
+     row past the card and .matter-hero's overflow: hidden would clip it, so the
+     type has to be sized to fit rather than trusted to.
+     The available width is the viewport minus the card's own insets:
+     calc(100% - 24px) on the card plus 18px padding each side = 100vw - 60.
+     The row is ~41 characters, and a fixed size cannot serve both ends of the
+     range — 12px fits inside 430px but overflows 320px. Hence vw, with a px
+     floor for legibility and a ceiling so it stops growing once it has room.
+     column-gap in em, not px, so the separators scale with the type and the
+     whole row grows and shrinks as one unit.
+     row-gap dropped: nothing wraps now, so it had nothing left to space. */
+  .matter-hero-services {
+    flex-wrap: nowrap;
+    justify-content: center;
+    column-gap: 0.6em;
+    font-size: clamp(9px, 2.7vw, 12px);
+    /* A shade tighter than the base -0.02em — buys back a few px across 41
+       characters, which is most of the margin at the 320px end. */
+    letter-spacing: -0.03em;
+    padding-top: 22px;
+  }
   .matter-hero-rule--left,
   .matter-hero-rule--right { width: 12px; }
+}
+
+/* 1a. Phones held upright — the first screenful is header + hero and nothing
+   else, with NamesYouKnow and everything below it reached only by scrolling.
+   Every iPhone portrait width in the range (320 through ~440) already falls
+   inside the 480px block above, so this needs no new width tiers; what varies
+   and actually matters here is HEIGHT, 568px on an SE 1st gen up to 932px on a
+   Pro Max, which is why nothing below is a fixed length.
+
+   Gated on orientation: portrait deliberately. Turned sideways an iPhone is
+   ~375-430px TALL, and pinning a full-height hero there would crush the card
+   into its own content. Landscape keeps `height: auto` from the base rules and
+   simply scrolls.
+
+   svh, not vh: iOS Safari resolves `vh` against the LARGE viewport, the height
+   with the URL bar collapsed. A 100vh hero is therefore taller than what is
+   actually on screen at first paint, so its bottom edge — the services row and
+   the bottom rule — sits behind the browser chrome until you scroll. svh is
+   the small viewport, the height with the chrome showing, which is exactly the
+   "fits on first paint" guarantee this needs. No `height: 100vh` fallback line
+   underneath: lightningcss strips it at build time, having established that
+   every browser in this project's targets understands svh. */
+@media (max-width: 480px) and (orientation: portrait) {
+  /* The logo bar's reserved height, shared by the two rules that have to agree
+     on it: the hero subtracts it, and .names-you-know is pinned to exactly it
+     (see the matching block below the max-width:760 rules). Declaring it once
+     means the first screenful cannot drift out of sync — with the bar's height
+     left to its content, the hero would have to guess, and any change to the
+     label size or logo height would silently push it off-screen again.
+     Raised from clamp(84px, 11svh, 104px): at 94px on a 15 the bar landed hard
+     against the bottom edge, close enough to the home-indicator area to read as
+     cut off. Reserving more lifts it — the hero above shrinks by the same
+     amount, and the bar centres its content in the taller box. The floor stays
+     comfortably above the bar's own ~61px of content (12px label + 8px gap +
+     38px logos); the ceiling stops a Pro Max turning a logo strip into a band. */
+  :root {
+    --nyk-bar-h: clamp(96px, 13svh, 118px);
+  }
+
+  .matter-hero {
+    /* min-height is cleared: the 520px above was sized to the section's own
+       content and is what let the next section peek into the first screen. */
+    min-height: 0;
+    /* Not a bare 100svh — the hero shares the first screenful with the logo
+       bar, which sits in normal flow directly beneath it at this width. */
+    height: calc(90svh - var(--nyk-bar-h));
+    /* Top clears the fixed header (pill at top:10px, ~40px tall). Scaled to
+       the viewport between a floor that always clears it and a ceiling that
+       stops a tall phone from opening a gulf. */
+    padding: clamp(52px, 8svh, 76px) 0 clamp(12px, 2.5svh, 24px);
+  }
+  /* Option (b): the card grows with the screen rather than staying 340px and
+     floating in whitespace. The top/bottom rules are still flex:1 and split
+     whatever is left over, so the card stays centred at every height.
+     min-height, not height, so the card can still outgrow this if the copy
+     ever wraps to more lines.
+     min-height: 0 overrides the 340px in the block above, and there is no
+     viewport-relative floor here on purpose. Every version of that floor —
+     62svh, then 54svh — made the card taller than the copy, and the surplus
+     had to surface somewhere: first as one dead gap under the ///, then, once
+     the row was unpinned, as ~94px of padding above and below. The card hugs
+     its copy instead, at the ~23px the reference uses.
+     align-items still centres the copy: the block padding is symmetric, so
+     without it the single flex item stretches and rounding lands on one side.
+
+     Consequence, deliberately accepted: the copy no longer fills the frame, so
+     the slack moves OUTSIDE the card and the flex:1 rules above and below grow
+     to ~190px each. The reference avoids that with more copy, not tighter
+     spacing — a 5-line headline and a body paragraph, ~380px of content in a
+     ~425px card. Restore something like .matter-hero-intro and the card fills
+     out again on its own. */
+  .matter-hero-card {
+    min-height: 0;
+    align-items: center;
+    padding: clamp(20px, 2.8svh, 30px) 18px;
+  }
+  /* Drops the base rule's `margin-top: auto`, which pins this row to the card's
+     bottom edge. That is the desktop look and it works there because the card
+     hugs its content; here the card is deliberately taller than the copy, so
+     auto collected ALL of that surplus into a single dead gap between the ///
+     and this row. Unpinned, the row sits directly under the slashes and the
+     surplus becomes even padding above and below the whole copy block instead.
+
+     The padding-top is the gap under the /// and it has to be set HERE, not
+     just in the 480px block above — this rule is later in the file at the same
+     specificity, so it is the one that lands on every iPhone width. Widened
+     from clamp(18px, 2.6svh, 28px): at ~22px the row sat too close under the
+     slashes to read as a separate line of the layout. */
+  .matter-hero-services {
+    margin-top: 0;
+    padding-top: clamp(26px, 5svh, 48px);
+  }
 }
 
 /* 2. Tablets & large phones */
@@ -302,7 +406,6 @@
   .matter-hero-badge-combinator { width: 88px; height: 26px; vertical-align: -8px; }
   .matter-hero-badge-mark { width: 16px; height: 16px; vertical-align: -4px; }
   .matter-hero-copy h1 { font-size: clamp(30px, 7vw, 40px); }
-  .matter-hero-intro { width: min(320px, 88%); }
   .matter-hero-slashes { margin: 16px 0 0; }
   .matter-hero-services { flex-wrap: wrap; justify-content: center; row-gap: 8px; font-size: 15px; padding-top: 26px; }
   .matter-hero-rule--left,
@@ -956,6 +1059,27 @@ html.lenis body {
   }
   .names-you-know-text--tsenta {
     font-size: 13px;
+  }
+}
+
+/* Pins the bar to the exact height the hero above subtracted, so header + hero
+   + this strip add up to one screenful and nothing else does. Must sit AFTER
+   the max-width:760 block — same specificity, so source order is what decides
+   which padding wins.
+
+   The padding goes to 0 and the content centres instead: the block above pads
+   24px/8px around content that is free to be whatever height it likes, which
+   is precisely the open-ended measurement the hero cannot subtract. Fixing the
+   box and centring within it makes the sum exact. */
+@media (max-width: 480px) and (orientation: portrait) {
+  .names-you-know {
+    height: var(--nyk-bar-h);
+    justify-content: center;
+    padding-block: 0;
+    /* Guards the sum against the flex children: with a fixed box, a logo row
+       that renders taller than expected would otherwise stretch it. */
+    flex-shrink: 0;
+    overflow: hidden;
   }
 }
 
@@ -2948,21 +3072,29 @@ html.lenis body {
    stylesheet, which sets `.calendly-inline-widget { height: 630px }` at the
    same specificity as a bare `.cta-calendly` — so which height won would come
    down to bundle order. The extra class settles it here and in the media
-   query below. */
+   query below.
+
+   An iframe has no intrinsic height — the parent cannot measure inside it — so
+   this number cannot be derived from the content and has to be chosen. Tied to
+   svh rather than a fixed length so it tracks the screen it is on: the rem
+   bounds keep it sane on a very short or very tall viewport, and both scale
+   with the user's font size rather than ignoring it. */
 .cta-booking .cta-calendly {
-  min-width: 320px;
-  height: 700px;
+  min-width: 20rem;
+  height: clamp(40rem, 78svh, 50rem);
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 0.75rem;
 }
 
 /* Social row under the booking widget */
 .cta-socials {
-  margin-top: 48px;
+  /* clamp so the separation from the widget above tightens on a short screen
+     instead of holding a desktop-sized gap there. */
+  margin-top: clamp(1.5rem, 5svh, 3rem);
   text-align: center;
 }
 .cta-socials-label {
-  margin: 0 0 18px;
+  margin: 0 0 1.125rem;
   color: rgba(11, 11, 11, 0.5);
   font-family: var(--font-logos-sans);
   font-size: 0.8125rem;
@@ -3036,8 +3168,16 @@ html.lenis body {
   .cta-booking {
     margin-top: 56px;
   }
+  /* Was a flat 1000px, which is where the trailing whitespace under the month
+     view came from: on a 852px-tall phone that box is taller than the whole
+     screen, so the shortest step left ~300px blank beneath it. 92svh keeps the
+     widget just under a screenful instead — it tracks the device rather than
+     assuming one. The taller steps (time slots, then the form) now scroll
+     inside the iframe, which is the deliberate trade: Calendly's own page
+     scrolls perfectly well, and a scroll on one step reads better than dead
+     space on every step. */
   .cta-booking .cta-calendly {
-    height: 1000px;
+    height: clamp(34rem, 92svh, 48rem);
   }
   .cta-heading {
     font-size: 3rem;

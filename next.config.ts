@@ -36,8 +36,22 @@ const nextConfig: NextConfig = {
       },
     ],
     /* AVIF first: the stills are photographic, which is where it wins most
-       over WebP. Both are tried before falling back to the original. */
-    formats: ["image/avif", "image/webp"],
+       over WebP. Both are tried before falling back to the original.
+     *
+     * Dev is WebP-only. The optimizer wraps the whole upstream fetch —
+     * headers AND the body read loop — in a single AbortSignal.timeout(7000)
+     * (image-optimizer.js, `fetchExternalImage`). AVIF encoding a 1.4-1.9MB
+     * still is heavy enough that, with several cards decoding at once, the
+     * event loop stops draining `res.body` before that 7s wall clock fires.
+     * The abort then throws from inside the `for await` rather than the
+     * fetch's own .catch, so it escapes as a bare TimeoutError and the route
+     * 500s instead of returning the intended 504. Production doesn't hit this
+     * — the optimized result is cached after the first request — so AVIF
+     * stays on where it actually pays for itself. */
+    formats:
+      process.env.NODE_ENV === "development"
+        ? ["image/webp"]
+        : ["image/avif", "image/webp"],
     /* R2 sends these stills with no Cache-Control at all, so the optimizer
        falls back to this. 31 days rather than the 4h default because the
        artwork is fixed per delivered film — a re-export means a new

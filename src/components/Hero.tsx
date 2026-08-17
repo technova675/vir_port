@@ -1,5 +1,4 @@
 import Image from "next/image";
-import NamesYouKnow from "./NamesYouKnow";
 
 export default function Hero() {
   return (
@@ -37,10 +36,6 @@ export default function Hero() {
           <span className="matter-hero-slashes" aria-hidden="true">
             ///
           </span>
-          {/* <p className="matter-hero-intro">
-            We create launch films, founder stories, and social content people
-            actually want to watch.
-          </p> */}
           <div className="matter-hero-services" aria-label="Services">
             <span>launch film</span>
             <span className="matter-hero-services-slash" aria-hidden="true">
