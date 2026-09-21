@@ -1,6 +1,5 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import("next").NextConfig} */
+const nextConfig = {
   /**
    * Dev-only. Next blocks cross-origin requests to /_next dev assets by
    * default, which breaks testing on a phone over the LAN — the browser's
