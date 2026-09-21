@@ -33,8 +33,8 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 # Opted in: holds only the public site URL, which `next build` inlines into the
-# exported HTML. Without it in the repo, a build elsewhere bakes a localhost
-# og:image. Nothing secret goes in this file.
+# generated metadata. Without it in the repo, the host's build bakes a
+# localhost og:image. Nothing secret goes in this file.
 !.env.production
 
 # vercel

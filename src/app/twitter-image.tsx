@@ -6,7 +6,3 @@
  * one drawing rather than two that drift apart.
  */
 export { default, alt, size, contentType } from "./opengraph-image";
-
-/* Re-exporting `dynamic` does not carry the route segment config across — Next
-   reads it per file — so this route declares it too. See opengraph-image.tsx. */
-export const dynamic = "force-static";
