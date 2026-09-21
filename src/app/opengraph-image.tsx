@@ -6,6 +6,11 @@ export const alt = "VIR — We make videos that internet loves";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+/* `output: "export"` has no server to render this on request, so the route has
+   to say it is static and be drawn once at build time into out/. Nothing here
+   varies per request, so this only ever restates what the file already does. */
+export const dynamic = "force-static";
+
 /**
  * The share card is the hero section, redrawn.
  *
